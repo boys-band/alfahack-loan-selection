@@ -1,0 +1,7 @@
+// Services remain independent builds, including inside their Docker contexts.
+['build', 'assemble', 'test', 'clean', 'spotlessCheck', 'spotlessApply'].each { taskName ->
+    tasks.register(taskName) {
+        group = taskName.startsWith('spotless') ? 'verification' : 'build'
+        dependsOn gradle.includedBuilds.collect { it.task(":${taskName}") }
+    }
+}

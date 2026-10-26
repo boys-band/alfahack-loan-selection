@@ -1,0 +1,536 @@
+openapi: 3.1.0
+info:
+  title: Скоринг, решения и ручное рассмотрение
+  version: 2.0.0
+  description: Контракт по docs/application-state-model.md. V1 заменен до реализации.
+    Общие правила — contracts/README.md.
+servers:
+- url: http://decision:8004
+  description: Внутренняя Docker-сеть
+security:
+- InternalBearer: []
+paths:
+  /v2/decisions:
+    post:
+      operationId: createDecision
+      summary: Сохранить Decision
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/DecisionResult
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/DecisionResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/DecisionRequest
+  /v2/decisions/{decisionId}:
+    get:
+      operationId: getDecision
+      summary: Прочитать Decision
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: decisionId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/DecisionResult
+  /v2/manual-reviews:
+    post:
+      operationId: createManualReview
+      summary: Создать дело текущей версии
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewCase
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewCase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/ManualReviewRequest
+    get:
+      operationId: listManualReviews
+      summary: Очередь открытых дел
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewPage
+  /v2/manual-reviews/{caseId}:
+    get:
+      operationId: getManualReview
+      summary: Прочитать дело
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: caseId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewCase
+  /v2/manual-reviews/{caseId}/actions:
+    post:
+      operationId: recordManualReviewAction
+      summary: Аудируемое действие сотрудника
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: caseId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewActionResult
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewActionResult
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/ManualReviewActionRequest
+  /v2/manual-reviews/{caseId}/close:
+    post:
+      operationId: closeManualReview
+      summary: Закрыть утратившее актуальность дело
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: caseId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewCase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/CloseCaseRequest
+  /health/live:
+    get:
+      operationId: decisionHealthLive
+      summary: Health live
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+    servers:
+    - url: http://decision:8004
+      description: Внутренняя Docker-сеть
+  /health/ready:
+    get:
+      operationId: decisionHealthReady
+      summary: Health ready
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+        '503':
+          $ref: '#/components/responses/Error503'
+    servers:
+    - url: http://decision:8004
+      description: Внутренняя Docker-сеть
+components:
+  securitySchemes:
+    InternalBearer:
+      type: http
+      scheme: bearer
+      description: Внутренний секрет; токены клиента/сотрудника не подходят
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      schema:
+        $ref: ../schemas.yaml#/$defs/Uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: ^[A-Za-z0-9:_.-]+$
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Непрозрачный ETag представления; передавать дословно.
+      schema:
+        type: string
+        pattern: ^"[0-9a-f]{64}"$
+  responses:
+    Error400:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error401:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error403:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error404:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error409:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error412:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error422:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error428:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error429:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error500:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error503:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem

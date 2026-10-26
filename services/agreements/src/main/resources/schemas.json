@@ -1,0 +1,4217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "NonEmptyText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Rubles": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000000
+    },
+    "PositiveRubles": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "PositiveVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ProductId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
+    },
+    "DocumentSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Purpose": {
+      "type": "string",
+      "enum": [
+        "WORKING_CAPITAL",
+        "EQUIPMENT",
+        "REFINANCING"
+      ]
+    },
+    "FinancialData": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "monthlyRevenueRub": {
+          "$ref": "#/$defs/Rubles"
+        },
+        "monthlyExpensesRub": {
+          "$ref": "#/$defs/Rubles"
+        },
+        "existingMonthlyDebtPaymentsRub": {
+          "$ref": "#/$defs/Rubles"
+        }
+      },
+      "required": [
+        "monthlyRevenueRub",
+        "monthlyExpensesRub",
+        "existingMonthlyDebtPaymentsRub"
+      ]
+    },
+    "DraftFinancialData": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "monthlyRevenueRub": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rubles"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "monthlyExpensesRub": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rubles"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "existingMonthlyDebtPaymentsRub": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rubles"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "monthlyRevenueRub",
+        "monthlyExpensesRub",
+        "existingMonthlyDebtPaymentsRub"
+      ]
+    },
+    "Company": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "legalName": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "inn": {
+          "type": "string",
+          "pattern": "^(\\d{10}|\\d{12})$"
+        },
+        "legalForm": {
+          "type": "string",
+          "enum": [
+            "IE",
+            "LLC"
+          ]
+        },
+        "registeredAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "id",
+        "legalName",
+        "inn",
+        "legalForm",
+        "registeredAt",
+        "settlementAccountId"
+      ]
+    },
+    "Product": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ProductId"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[1-9]\\d*$"
+        },
+        "name": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "description": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "purposeCodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Purpose"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minAmountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "maxAmountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "minTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "maxTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "annualRateBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "minBusinessAgeMonths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxDebtServiceRatioBps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "name",
+        "description",
+        "purposeCodes",
+        "minAmountRub",
+        "maxAmountRub",
+        "minTermMonths",
+        "maxTermMonths",
+        "annualRateBps",
+        "minBusinessAgeMonths",
+        "maxDebtServiceRatioBps"
+      ]
+    },
+    "RiskFactor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "BASE",
+            "CREDIT_HISTORY",
+            "BUSINESS_AGE",
+            "DEBT_BURDEN"
+          ]
+        },
+        "points": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 300
+        },
+        "description": {
+          "$ref": "#/$defs/NonEmptyText"
+        }
+      },
+      "required": [
+        "code",
+        "points",
+        "description"
+      ]
+    },
+    "RiskAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 300,
+          "maximum": 900
+        },
+        "grade": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "factors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RiskFactor"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "freeCashFlowRub": {
+          "type": "integer",
+          "minimum": -1000000000000,
+          "maximum": 1000000000000
+        },
+        "debtServiceRatioBps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "score",
+        "grade",
+        "factors",
+        "freeCashFlowRub",
+        "debtServiceRatioBps"
+      ]
+    },
+    "Problem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "format": "uri"
+        },
+        "title": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 400,
+          "maximum": 599
+        },
+        "detail": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "requestId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(/.*)?$"
+              },
+              "message": {
+                "$ref": "#/$defs/NonEmptyText"
+              }
+            },
+            "required": [
+              "path",
+              "message"
+            ]
+          }
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "status",
+        "detail",
+        "code",
+        "requestId",
+        "errors"
+      ]
+    },
+    "Health": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "ok"
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "ApplicationStatus": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "SUBMITTED",
+        "VALIDATION",
+        "IN_REVIEW",
+        "NEEDS_INFO",
+        "MANUAL_REVIEW",
+        "OFFER_READY",
+        "OFFER_ACCEPTED",
+        "AWAITING_SIGNATURE",
+        "SIGNED",
+        "DISBURSING",
+        "DISBURSED",
+        "REJECTED",
+        "CANCELLED",
+        "EXPIRED"
+      ]
+    },
+    "ReviewStage": {
+      "type": "string",
+      "enum": [
+        "ENRICHMENT",
+        "SCORING"
+      ]
+    },
+    "ProcessingStep": {
+      "type": "string",
+      "enum": [
+        "VALIDATION",
+        "ENRICHMENT",
+        "SCORING",
+        "MANUAL_CASE",
+        "MANUAL_ACTION",
+        "AGREEMENT",
+        "SIGNATURE",
+        "PAYOUT_VALIDATION",
+        "DISBURSEMENT",
+        "CLOSURE"
+      ]
+    },
+    "AdditionalInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "businessDescription": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "revenueExplanation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "refinancedDebtRub": {
+          "$ref": "#/$defs/Rubles"
+        }
+      },
+      "required": []
+    },
+    "SubmitRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "personalDataConsent": {
+          "const": true
+        },
+        "creditBureauConsent": {
+          "const": true
+        }
+      },
+      "required": [
+        "personalDataConsent",
+        "creditBureauConsent"
+      ]
+    },
+    "Consents": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "personalDataConsent": {
+          "const": true
+        },
+        "creditBureauConsent": {
+          "const": true
+        },
+        "acceptedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "personalDataConsent",
+        "creditBureauConsent",
+        "acceptedAt"
+      ]
+    },
+    "InfoRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "message": {
+          "$ref": "#/$defs/NonEmptyText"
+        }
+      },
+      "required": [
+        "path",
+        "message"
+      ]
+    },
+    "InformationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "VALIDATION",
+            "ENRICHMENT",
+            "SCORING",
+            "STAFF"
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InfoRequirement"
+          },
+          "minItems": 1
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "deadline": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "ANSWERED",
+            "CLOSED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "dataVersion",
+        "source",
+        "requirements",
+        "createdAt",
+        "deadline",
+        "status"
+      ]
+    },
+    "VerificationFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "registryStatus": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "INACTIVE"
+          ]
+        },
+        "registryRegisteredAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "businessAgeMonths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "creditHistoryScore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "hasCurrentOverdue": {
+          "type": "boolean"
+        },
+        "taxDebtRub": {
+          "$ref": "#/$defs/Rubles"
+        }
+      },
+      "required": [
+        "registryStatus",
+        "registryRegisteredAt",
+        "businessAgeMonths",
+        "creditHistoryScore",
+        "hasCurrentOverdue",
+        "taxDebtRub"
+      ]
+    },
+    "FactsResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verificationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "confirmedFacts": {
+          "$ref": "#/$defs/VerificationFacts"
+        }
+      },
+      "required": [
+        "verificationId",
+        "confirmedFacts"
+      ]
+    },
+    "StaffAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "caseActionId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "staffId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "reason": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "recordedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "confirmedFacts": {
+          "$ref": "#/$defs/VerificationFacts"
+        }
+      },
+      "required": [
+        "caseActionId",
+        "staffId",
+        "reason",
+        "recordedAt",
+        "confirmedFacts"
+      ]
+    },
+    "SubmittedData": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "$ref": "#/$defs/Company"
+        },
+        "product": {
+          "$ref": "#/$defs/Product"
+        },
+        "amountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "termMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "purpose": {
+          "$ref": "#/$defs/Purpose"
+        },
+        "financialData": {
+          "$ref": "#/$defs/FinancialData"
+        },
+        "additionalInfo": {
+          "$ref": "#/$defs/AdditionalInfo"
+        },
+        "consents": {
+          "$ref": "#/$defs/Consents"
+        },
+        "staffAttestation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StaffAttestation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "product",
+        "amountRub",
+        "termMonths",
+        "purpose",
+        "financialData",
+        "additionalInfo",
+        "consents",
+        "staffAttestation"
+      ]
+    },
+    "DataChanges": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "productId": {
+          "$ref": "#/$defs/ProductId"
+        },
+        "productVersion": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "amountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "termMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "purpose": {
+          "$ref": "#/$defs/Purpose"
+        },
+        "financialData": {
+          "$ref": "#/$defs/FinancialData"
+        },
+        "additionalInfo": {
+          "$ref": "#/$defs/AdditionalInfo"
+        }
+      },
+      "required": [],
+      "minProperties": 1,
+      "allOf": [
+        {
+          "dependentRequired": {
+            "productId": [
+              "productVersion"
+            ],
+            "productVersion": [
+              "productId"
+            ]
+          }
+        }
+      ]
+    },
+    "DataVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "data": {
+          "$ref": "#/$defs/SubmittedData"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "INITIAL_SUBMISSION",
+            "CUSTOMER_INFO",
+            "CUSTOMER_TERMS",
+            "STAFF_AMENDMENT"
+          ]
+        },
+        "actorId": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "data",
+        "createdAt",
+        "origin",
+        "actorId"
+      ]
+    },
+    "Finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "REGISTRY",
+            "BKI",
+            "FNS",
+            "STAFF"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "INFO",
+            "WARNING",
+            "BLOCK"
+          ]
+        },
+        "message": {
+          "$ref": "#/$defs/NonEmptyText"
+        }
+      },
+      "required": [
+        "source",
+        "code",
+        "severity",
+        "message"
+      ]
+    },
+    "VerificationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "data": {
+          "$ref": "#/$defs/SubmittedData"
+        },
+        "asOf": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "data",
+        "asOf"
+      ]
+    },
+    "VerificationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "COMPLETE",
+            "NEEDS_INFO",
+            "MANUAL_REVIEW"
+          ]
+        },
+        "asOf": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "completedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "rawFacts": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerificationFacts"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "facts": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerificationFacts"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confirmed": {
+          "type": "boolean"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InfoRequirement"
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Finding"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "dataVersion",
+        "outcome",
+        "asOf",
+        "completedAt",
+        "rawFacts",
+        "facts",
+        "confirmed",
+        "requirements",
+        "findings"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "COMPLETE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "facts": {
+                "$ref": "#/$defs/VerificationFacts"
+              },
+              "confirmed": {
+                "const": true
+              },
+              "requirements": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "confirmed": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "NEEDS_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "requirements": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "DecisionReasonCode": {
+      "type": "string",
+      "enum": [
+        "REGISTRY_INACTIVE",
+        "CURRENT_OVERDUE",
+        "TAX_DEBT_LIMIT",
+        "BUSINESS_TOO_YOUNG",
+        "NON_POSITIVE_CASH_FLOW",
+        "DEBT_BURDEN_LIMIT",
+        "PRODUCT_LIMITS",
+        "RISK_SCORE_LOW",
+        "BORDERLINE_RISK",
+        "ADDITIONAL_INFORMATION_REQUIRED",
+        "APPROVED_BY_POLICY",
+        "APPROVED_BY_STAFF",
+        "REJECTED_BY_STAFF"
+      ]
+    },
+    "DecisionReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/DecisionReasonCode"
+        },
+        "message": {
+          "$ref": "#/$defs/NonEmptyText"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "EvaluatedTerms": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "amountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "termMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "annualRateBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "monthlyPaymentRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "risk": {
+          "$ref": "#/$defs/RiskAssessment"
+        },
+        "eligible": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DecisionReason"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "amountRub",
+        "termMonths",
+        "annualRateBps",
+        "monthlyPaymentRub",
+        "risk",
+        "eligible",
+        "reasons"
+      ]
+    },
+    "Offer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "version": {
+          "const": 1
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "productId": {
+          "$ref": "#/$defs/ProductId"
+        },
+        "productVersion": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "REQUESTED",
+            "COUNTER"
+          ]
+        },
+        "termsId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "amountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "termMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "annualRateBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "monthlyPaymentRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "applicationId",
+        "dataVersion",
+        "productId",
+        "productVersion",
+        "type",
+        "termsId",
+        "amountRub",
+        "termMonths",
+        "annualRateBps",
+        "monthlyPaymentRub",
+        "expiresAt"
+      ]
+    },
+    "StaffAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "staffId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "actionId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "reason": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "decidedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "staffId",
+        "actionId",
+        "reason",
+        "decidedAt"
+      ]
+    },
+    "DecisionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "data": {
+          "$ref": "#/$defs/SubmittedData"
+        },
+        "verification": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/VerificationResult"
+            },
+            {
+              "properties": {
+                "outcome": {
+                  "const": "COMPLETE"
+                },
+                "confirmed": {
+                  "const": true
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "data",
+        "verification"
+      ]
+    },
+    "DecisionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "AUTO",
+            "MANUAL"
+          ]
+        },
+        "policyVersion": {
+          "const": "demo-policy-v2"
+        },
+        "evaluatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "APPROVED",
+            "REJECTED",
+            "NEEDS_INFO",
+            "MANUAL_REVIEW"
+          ]
+        },
+        "assessmentId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "risk": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RiskAssessment"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluatedTerms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvaluatedTerms"
+          }
+        },
+        "selectedTermsId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DecisionReason"
+          },
+          "minItems": 1
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InfoRequirement"
+          }
+        },
+        "offer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Offer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "staffAudit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StaffAudit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "dataVersion",
+        "kind",
+        "policyVersion",
+        "evaluatedAt",
+        "outcome",
+        "assessmentId",
+        "risk",
+        "evaluatedTerms",
+        "selectedTermsId",
+        "reasons",
+        "requirements",
+        "offer",
+        "staffAudit"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "APPROVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "risk": {
+                "$ref": "#/$defs/RiskAssessment"
+              },
+              "offer": {
+                "$ref": "#/$defs/Offer"
+              },
+              "assessmentId": {
+                "$ref": "#/$defs/Uuid"
+              },
+              "selectedTermsId": {
+                "$ref": "#/$defs/Uuid"
+              },
+              "evaluatedTerms": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "offer": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "NEEDS_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "requirements": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "MANUAL"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "staffAudit": {
+                "$ref": "#/$defs/StaffAudit"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "staffAudit": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ManualActionType": {
+      "type": "string",
+      "enum": [
+        "APPROVE",
+        "REJECT",
+        "REQUEST_INFO",
+        "AMEND_DATA"
+      ]
+    },
+    "ManualReviewRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "data": {
+          "$ref": "#/$defs/SubmittedData"
+        },
+        "verification": {
+          "$ref": "#/$defs/VerificationResult"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DecisionResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/NonEmptyText"
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "data",
+        "verification",
+        "decision",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "anyOf": [
+            {
+              "properties": {
+                "decision": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/DecisionResult"
+                    },
+                    {
+                      "properties": {
+                        "outcome": {
+                          "const": "MANUAL_REVIEW"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "verification": {
+                  "properties": {
+                    "outcome": {
+                      "const": "COMPLETE"
+                    },
+                    "confirmed": {
+                      "const": true
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "decision": {
+                  "type": "null"
+                },
+                "verification": {
+                  "properties": {
+                    "outcome": {
+                      "const": "MANUAL_REVIEW"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "ManualReviewCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "verificationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "decisionId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assessmentId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "RESOLVED",
+            "CLOSED"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "allowedActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManualActionType"
+          },
+          "uniqueItems": true
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "dataVersion",
+        "verificationId",
+        "decisionId",
+        "assessmentId",
+        "status",
+        "reason",
+        "allowedActions",
+        "createdAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "assessmentId": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "allowedActions": {
+                "not": {
+                  "contains": {
+                    "const": "APPROVE"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "RESOLVED",
+                  "CLOSED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "allowedActions": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ManualReviewPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ManualReviewCase"
+          }
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextCursor"
+      ]
+    },
+    "StaffReviewActionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/ManualActionType"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        },
+        "termsId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InfoRequirement"
+          }
+        },
+        "changes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DataChanges"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "factsResolution": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FactsResolution"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "termsId",
+        "requirements",
+        "changes",
+        "factsResolution"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "APPROVE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "$ref": "#/$defs/Uuid"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REQUEST_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "requirements": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "AMEND_DATA"
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "changes": {
+                    "$ref": "#/$defs/DataChanges"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "factsResolution": {
+                    "$ref": "#/$defs/FactsResolution"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "APPROVE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "requirements": {
+                "maxItems": 0
+              },
+              "changes": {
+                "type": "null"
+              },
+              "factsResolution": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "type": "null"
+              },
+              "requirements": {
+                "maxItems": 0
+              },
+              "changes": {
+                "type": "null"
+              },
+              "factsResolution": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REQUEST_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "type": "null"
+              },
+              "changes": {
+                "type": "null"
+              },
+              "factsResolution": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "AMEND_DATA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "type": "null"
+              },
+              "requirements": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ManualReviewActionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actionId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "staffId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "action": {
+          "$ref": "#/$defs/ManualActionType"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        },
+        "termsId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InfoRequirement"
+          }
+        },
+        "changes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DataChanges"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "factsResolution": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FactsResolution"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "actionId",
+        "staffId",
+        "action",
+        "reason",
+        "termsId",
+        "requirements",
+        "changes",
+        "factsResolution"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "APPROVE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "$ref": "#/$defs/Uuid"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REQUEST_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "requirements": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "AMEND_DATA"
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "changes": {
+                    "$ref": "#/$defs/DataChanges"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "factsResolution": {
+                    "$ref": "#/$defs/FactsResolution"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "APPROVE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "requirements": {
+                "maxItems": 0
+              },
+              "changes": {
+                "type": "null"
+              },
+              "factsResolution": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "type": "null"
+              },
+              "requirements": {
+                "maxItems": 0
+              },
+              "changes": {
+                "type": "null"
+              },
+              "factsResolution": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REQUEST_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "type": "null"
+              },
+              "changes": {
+                "type": "null"
+              },
+              "factsResolution": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "AMEND_DATA"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "termsId": {
+                "type": "null"
+              },
+              "requirements": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ManualReviewActionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "caseId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "action": {
+          "$ref": "#/$defs/ManualActionType"
+        },
+        "staffId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "reason": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DecisionResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InfoRequirement"
+          }
+        },
+        "changes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DataChanges"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "factsResolution": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FactsResolution"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "caseId",
+        "applicationId",
+        "dataVersion",
+        "action",
+        "staffId",
+        "reason",
+        "createdAt",
+        "decision",
+        "requirements",
+        "changes",
+        "factsResolution"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "APPROVE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/DecisionResult"
+                  },
+                  {
+                    "properties": {
+                      "kind": {
+                        "const": "MANUAL"
+                      },
+                      "outcome": {
+                        "const": "APPROVED"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "REJECT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/DecisionResult"
+                  },
+                  {
+                    "properties": {
+                      "kind": {
+                        "const": "MANUAL"
+                      },
+                      "outcome": {
+                        "const": "REJECTED"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "REQUEST_INFO",
+                  "AMEND_DATA"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CloseCaseRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "CANCELLED",
+            "EXPIRED",
+            "SUPERSEDED"
+          ]
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    },
+    "AcceptedOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "offerVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "acceptedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "offerId",
+        "offerVersion",
+        "dataVersion",
+        "acceptedAt"
+      ]
+    },
+    "AgreementRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "customerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "company": {
+          "$ref": "#/$defs/Company"
+        },
+        "offer": {
+          "$ref": "#/$defs/Offer"
+        },
+        "acceptedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "customerId",
+        "company",
+        "offer",
+        "acceptedAt"
+      ]
+    },
+    "Document": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "mediaType": {
+          "const": "text/plain; charset=utf-8"
+        },
+        "content": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "sha256": {
+          "$ref": "#/$defs/DocumentSha256"
+        }
+      },
+      "required": [
+        "version",
+        "mediaType",
+        "content",
+        "sha256"
+      ]
+    },
+    "Signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "customerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "documentVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "documentSha256": {
+          "$ref": "#/$defs/DocumentSha256"
+        },
+        "signedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "method": {
+          "const": "DEMO_CONSENT"
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "documentVersion",
+        "documentSha256",
+        "signedAt",
+        "method"
+      ]
+    },
+    "Agreement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "customerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "offer": {
+          "$ref": "#/$defs/Offer"
+        },
+        "acceptedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "signBy": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "READY",
+            "SIGNED",
+            "CLOSED"
+          ]
+        },
+        "closureReason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "CANCELLED",
+                "EXPIRED",
+                "SUPERSEDED"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "$ref": "#/$defs/Document"
+        },
+        "signature": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Signature"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "dataVersion",
+        "customerId",
+        "companyId",
+        "offer",
+        "acceptedAt",
+        "createdAt",
+        "signBy",
+        "status",
+        "closureReason",
+        "document",
+        "signature"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "SIGNED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "signature": {
+                "$ref": "#/$defs/Signature"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "signature": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "CLOSED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "closureReason": {
+                "type": "string",
+                "enum": [
+                  "CANCELLED",
+                  "EXPIRED",
+                  "SUPERSEDED"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "closureReason": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AgreementSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "READY",
+            "SIGNED",
+            "CLOSED"
+          ]
+        },
+        "documentVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "documentSha256": {
+          "$ref": "#/$defs/DocumentSha256"
+        },
+        "signBy": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "signedAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "documentVersion",
+        "documentSha256",
+        "signBy",
+        "signedAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "SIGNED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "signedAt": {
+                "$ref": "#/$defs/Timestamp"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "signedAt": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "InternalSignRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "offerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "offerVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "customerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "documentVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "documentSha256": {
+          "$ref": "#/$defs/DocumentSha256"
+        },
+        "consent": {
+          "const": true
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "offerId",
+        "offerVersion",
+        "customerId",
+        "documentVersion",
+        "documentSha256",
+        "consent"
+      ]
+    },
+    "CloseAgreementRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "CANCELLED",
+            "EXPIRED",
+            "SUPERSEDED"
+          ]
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    },
+    "Account": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "label": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "INVALID"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "companyId",
+        "label",
+        "status"
+      ]
+    },
+    "AccountList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Account"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    },
+    "PayoutInstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payoutVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "operationId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "payoutVersion",
+        "settlementAccountId",
+        "operationId"
+      ]
+    },
+    "PayoutCheckRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "payoutVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "agreementId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "applicationId",
+        "dataVersion",
+        "payoutVersion",
+        "agreementId",
+        "companyId",
+        "settlementAccountId"
+      ]
+    },
+    "PayoutCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "payoutVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "agreementId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "READY",
+            "NEEDS_CORRECTION"
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_NOT_OWNED",
+              "ACCOUNT_INVALID"
+            ]
+          }
+        },
+        "checkedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "dataVersion",
+        "payoutVersion",
+        "agreementId",
+        "companyId",
+        "settlementAccountId",
+        "outcome",
+        "reasonCodes",
+        "checkedAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "READY"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reasonCodes": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reasonCodes": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "DisbursementRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "agreementId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "payoutVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "payoutCheckId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "operationId",
+        "applicationId",
+        "dataVersion",
+        "agreementId",
+        "payoutVersion",
+        "payoutCheckId",
+        "companyId",
+        "settlementAccountId"
+      ]
+    },
+    "Disbursement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "agreementId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "payoutVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "payoutCheckId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "amountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "currency": {
+          "const": "RUB"
+        },
+        "status": {
+          "const": "EXECUTED"
+        },
+        "creditEntryId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "executedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "operationId",
+        "applicationId",
+        "dataVersion",
+        "agreementId",
+        "payoutVersion",
+        "payoutCheckId",
+        "companyId",
+        "settlementAccountId",
+        "amountRub",
+        "currency",
+        "status",
+        "creditEntryId",
+        "executedAt"
+      ]
+    },
+    "TechnicalError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "step": {
+          "$ref": "#/$defs/ProcessingStep"
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "message": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "lastAttemptAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "step",
+        "code",
+        "message",
+        "attemptCount",
+        "lastAttemptAt",
+        "retryable"
+      ]
+    },
+    "Processing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "step": {
+          "$ref": "#/$defs/ProcessingStep"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "RUNNING",
+            "PAUSED"
+          ]
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "step",
+        "operationId",
+        "state",
+        "attemptCount"
+      ]
+    },
+    "Application": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "customerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "version": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "$ref": "#/$defs/ApplicationStatus"
+        },
+        "reviewStage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "company": {
+          "$ref": "#/$defs/Company"
+        },
+        "product": {
+          "$ref": "#/$defs/Product"
+        },
+        "amountRub": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveRubles"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termMonths": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "purpose": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Purpose"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "financialData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DraftFinancialData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "additionalInfo": {
+          "$ref": "#/$defs/AdditionalInfo"
+        },
+        "consents": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Consents"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerificationResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DecisionResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "informationRequest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InformationRequest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "manualReview": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ManualReviewCase"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptedOffer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AcceptedOffer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agreement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AgreementSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "payoutInstruction": {
+          "$ref": "#/$defs/PayoutInstruction"
+        },
+        "payoutCheck": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PayoutCheck"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disbursement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Disbursement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deadlineKind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "INFO",
+                "OFFER",
+                "SIGNATURE"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "actionDeadline": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closureReason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "INFO_TIMEOUT",
+                "OFFER_TIMEOUT",
+                "SIGNATURE_TIMEOUT",
+                "CUSTOMER_CANCELLED",
+                "CREDIT_REJECTED"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "technicalError": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TechnicalError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "processing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Processing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "availableActions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "EDIT",
+              "SUBMIT",
+              "PROVIDE_INFO",
+              "CHANGE_TERMS",
+              "ACCEPT_OFFER",
+              "SIGN",
+              "CANCEL",
+              "UPDATE_PAYOUT_ACCOUNT",
+              "RETRY_PROCESSING"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Действия клиента-владельца; банковские действия определяет manualReview.allowedActions."
+        },
+        "nextActionHint": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "version",
+        "dataVersion",
+        "status",
+        "reviewStage",
+        "company",
+        "product",
+        "amountRub",
+        "termMonths",
+        "purpose",
+        "financialData",
+        "additionalInfo",
+        "consents",
+        "verification",
+        "decision",
+        "informationRequest",
+        "manualReview",
+        "acceptedOffer",
+        "agreement",
+        "payoutInstruction",
+        "payoutCheck",
+        "disbursement",
+        "deadlineKind",
+        "actionDeadline",
+        "closureReason",
+        "technicalError",
+        "processing",
+        "availableActions",
+        "nextActionHint",
+        "createdAt",
+        "updatedAt"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "IN_REVIEW"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reviewStage": {
+                "$ref": "#/$defs/ReviewStage"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reviewStage": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DRAFT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "dataVersion": {
+                "const": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "not": {
+                  "enum": [
+                    "DRAFT",
+                    "CANCELLED"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "dataVersion": {
+                "$ref": "#/$defs/PositiveVersion"
+              },
+              "amountRub": {
+                "$ref": "#/$defs/PositiveRubles"
+              },
+              "termMonths": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 120
+              },
+              "purpose": {
+                "$ref": "#/$defs/Purpose"
+              },
+              "financialData": {
+                "$ref": "#/$defs/FinancialData"
+              },
+              "consents": {
+                "$ref": "#/$defs/Consents"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NEEDS_INFO"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "informationRequest": {
+                "$ref": "#/$defs/InformationRequest"
+              },
+              "deadlineKind": {
+                "const": "INFO"
+              },
+              "actionDeadline": {
+                "$ref": "#/$defs/Timestamp"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "OFFER_READY"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/DecisionResult"
+                  },
+                  {
+                    "properties": {
+                      "outcome": {
+                        "const": "APPROVED"
+                      }
+                    }
+                  }
+                ]
+              },
+              "deadlineKind": {
+                "const": "OFFER"
+              },
+              "actionDeadline": {
+                "$ref": "#/$defs/Timestamp"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "AWAITING_SIGNATURE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "agreement": {
+                "$ref": "#/$defs/AgreementSummary"
+              },
+              "deadlineKind": {
+                "const": "SIGNATURE"
+              },
+              "actionDeadline": {
+                "$ref": "#/$defs/Timestamp"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "MANUAL_REVIEW"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "manualReview": {
+                "$ref": "#/$defs/ManualReviewCase"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "SIGNED",
+                  "DISBURSING",
+                  "DISBURSED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "agreement": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/AgreementSummary"
+                  },
+                  {
+                    "properties": {
+                      "status": {
+                        "const": "SIGNED"
+                      }
+                    }
+                  }
+                ]
+              },
+              "acceptedOffer": {
+                "$ref": "#/$defs/AcceptedOffer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DISBURSED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "disbursement": {
+                "$ref": "#/$defs/Disbursement"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "not": {
+                  "enum": [
+                    "NEEDS_INFO",
+                    "OFFER_READY",
+                    "AWAITING_SIGNATURE"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "deadlineKind": {
+                "type": "null"
+              },
+              "actionDeadline": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "DISBURSED",
+                  "REJECTED",
+                  "CANCELLED",
+                  "EXPIRED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "processing": {
+                "type": "null"
+              },
+              "technicalError": {
+                "type": "null"
+              },
+              "availableActions": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "IN_REVIEW"
+              },
+              "reviewStage": {
+                "const": "SCORING"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verification": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/VerificationResult"
+                  },
+                  {
+                    "properties": {
+                      "outcome": {
+                        "const": "COMPLETE"
+                      },
+                      "confirmed": {
+                        "const": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "OFFER_READY",
+                  "OFFER_ACCEPTED",
+                  "AWAITING_SIGNATURE",
+                  "SIGNED",
+                  "DISBURSING",
+                  "DISBURSED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verification": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/VerificationResult"
+                  },
+                  {
+                    "properties": {
+                      "outcome": {
+                        "const": "COMPLETE"
+                      },
+                      "confirmed": {
+                        "const": true
+                      }
+                    }
+                  }
+                ]
+              },
+              "decision": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/DecisionResult"
+                  },
+                  {
+                    "properties": {
+                      "outcome": {
+                        "const": "APPROVED"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "OFFER_ACCEPTED",
+                  "AWAITING_SIGNATURE"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "acceptedOffer": {
+                "$ref": "#/$defs/AcceptedOffer"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CreateApplicationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "companyId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "productId": {
+          "$ref": "#/$defs/ProductId"
+        },
+        "productVersion": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "amountRub": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveRubles"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termMonths": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "purpose": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Purpose"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "financialData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DraftFinancialData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "additionalInfo": {
+          "$ref": "#/$defs/AdditionalInfo"
+        }
+      },
+      "required": [
+        "companyId",
+        "productId",
+        "productVersion"
+      ]
+    },
+    "UpdateDraftRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amountRub": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveRubles"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termMonths": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "purpose": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Purpose"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "financialData": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DraftFinancialData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "additionalInfo": {
+          "$ref": "#/$defs/AdditionalInfo"
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    },
+    "ProvideInfoRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "informationRequestId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "changes": {
+          "$ref": "#/$defs/DataChanges"
+        }
+      },
+      "required": [
+        "informationRequestId",
+        "changes"
+      ]
+    },
+    "AcceptOfferRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offerId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "offerVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "dataVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        }
+      },
+      "required": [
+        "offerId",
+        "offerVersion",
+        "dataVersion"
+      ]
+    },
+    "PublicSignRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agreementId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "documentVersion": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "documentSha256": {
+          "$ref": "#/$defs/DocumentSha256"
+        },
+        "consent": {
+          "const": true
+        }
+      },
+      "required": [
+        "agreementId",
+        "documentVersion",
+        "documentSha256",
+        "consent"
+      ]
+    },
+    "CancelRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    },
+    "UpdatePayoutAccountRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "settlementAccountId": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "settlementAccountId"
+      ]
+    },
+    "Actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "CUSTOMER",
+            "STAFF",
+            "SYSTEM"
+          ]
+        },
+        "id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ]
+    },
+    "TimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "applicationId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "sequence": {
+          "$ref": "#/$defs/PositiveVersion"
+        },
+        "occurredAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "fromStatus": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ApplicationStatus"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fromReviewStage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/ApplicationStatus"
+        },
+        "reviewStage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "actor": {
+          "$ref": "#/$defs/Actor"
+        },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "DRAFT_CREATED",
+            "DRAFT_UPDATED",
+            "STATE_CHANGED",
+            "DATA_VERSION_CREATED",
+            "TECHNICAL_FAILURE",
+            "PROCESSING_RETRIED",
+            "COMMAND_ACCEPTED",
+            "PAYOUT_UPDATED"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/NonEmptyText"
+        }
+      },
+      "required": [
+        "id",
+        "applicationId",
+        "sequence",
+        "occurredAt",
+        "fromStatus",
+        "fromReviewStage",
+        "status",
+        "reviewStage",
+        "dataVersion",
+        "actor",
+        "eventType",
+        "reason"
+      ]
+    },
+    "ApplicationPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Application"
+          }
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NonEmptyText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextCursor"
+      ]
+    },
+    "CompanyList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Company"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    },
+    "ProductList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Product"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    },
+    "AdminProductSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "product": {
+          "$ref": "#/$defs/Product"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "product",
+        "active"
+      ]
+    },
+    "AdminProductList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AdminProductSummary"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    },
+    "AdminProduct": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "product": {
+          "$ref": "#/$defs/Product"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Product"
+          }
+        }
+      },
+      "required": [
+        "product",
+        "active",
+        "versions"
+      ]
+    },
+    "PublishProductVersionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "description": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "purposeCodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Purpose"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minAmountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "maxAmountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "minTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "maxTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "annualRateBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "minBusinessAgeMonths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxDebtServiceRatioBps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "purposeCodes",
+        "minAmountRub",
+        "maxAmountRub",
+        "minTermMonths",
+        "maxTermMonths",
+        "annualRateBps",
+        "minBusinessAgeMonths",
+        "maxDebtServiceRatioBps",
+        "reason"
+      ]
+    },
+    "CreateAdminProductRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ProductId"
+        },
+        "name": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "description": {
+          "$ref": "#/$defs/NonEmptyText"
+        },
+        "purposeCodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Purpose"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "minAmountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "maxAmountRub": {
+          "$ref": "#/$defs/PositiveRubles"
+        },
+        "minTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "maxTermMonths": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "annualRateBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "minBusinessAgeMonths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxDebtServiceRatioBps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "purposeCodes",
+        "minAmountRub",
+        "maxAmountRub",
+        "minTermMonths",
+        "maxTermMonths",
+        "annualRateBps",
+        "minBusinessAgeMonths",
+        "maxDebtServiceRatioBps",
+        "reason"
+      ]
+    },
+    "ArchiveAdminProductRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    },
+    "Timeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineEntry"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ]
+    },
+    "ChangeTermsRequest": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DataChanges"
+        },
+        {
+          "anyOf": [
+            {
+              "required": [
+                "amountRub"
+              ]
+            },
+            {
+              "required": [
+                "termMonths"
+              ]
+            },
+            {
+              "required": [
+                "productId"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

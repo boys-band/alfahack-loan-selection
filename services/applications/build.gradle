@@ -1,0 +1,62 @@
+plugins {
+    id 'com.diffplug.spotless' version '8.0.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.16'
+}
+
+group = 'ru.alfa'
+version = '2.0.0'
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+repositories { mavenCentral() }
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.5.16')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation('org.postgresql:postgresql:42.7.8') {
+        version { strictly '42.7.8' }
+    }
+    implementation 'com.networknt:json-schema-validator:1.5.9'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Preserve Maven's resolved versions instead of upgrading via Gradle BOM selection.
+    constraints {
+        implementation('org.yaml:snakeyaml') { version { strictly '2.4' } }
+        testImplementation('net.bytebuddy:byte-buddy') { version { strictly '1.17.8' } }
+    }
+}
+
+dependencyLocking { lockAllConfigurations() }
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = 'UTF-8'
+    options.compilerArgs += '-parameters'
+}
+test { useJUnitPlatform { excludeTags 'integration' } }
+tasks.register('integrationTest', Test) {
+    description = 'HTTP tests with isolated real PostgreSQL and contract dependency stubs'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform { includeTags 'integration' }
+    shouldRunAfter test
+    outputs.upToDateWhen { false }
+}
+tasks.named('bootJar') { archiveFileName = 'applications.jar' }
+
+// Keep the formatter/version identical in all independent service builds.
+spotless {
+    java {
+        if (providers.gradleProperty('formatFiles').isPresent()) {
+            target new groovy.json.JsonSlurper().parseText(providers.gradleProperty('formatFiles').get())
+        } else {
+            target 'src/*/java/**/*.java', 'tests/unit/**/*.java', 'tests/integration/**/*.java'
+        }
+        googleJavaFormat('1.28.0')
+        encoding 'UTF-8'
+        lineEndings 'UNIX'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

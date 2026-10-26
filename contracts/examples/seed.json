@@ -1,0 +1,249 @@
+{
+  "customer": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "displayName": "Демо предприниматель",
+    "tokenEnvironmentVariable": "DEMO_CUSTOMER_TOKEN"
+  },
+  "companies": [
+    {
+      "id": "00000000-0000-4000-8000-000000000101",
+      "legalName": "ООО «Демо Мастерская»",
+      "inn": "7700000002",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000102",
+      "legalName": "ООО «Демо Просрочка»",
+      "inn": "7700000010",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001102"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000103",
+      "legalName": "ООО «Демо Нужны сведения»",
+      "inn": "7700000103",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000104",
+      "legalName": "ООО «Демо Спорные данные»",
+      "inn": "7700000104",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001104"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000105",
+      "legalName": "ООО «Демо Ручной анализ»",
+      "inn": "7700000105",
+      "legalForm": "LLC",
+      "registeredAt": "2026-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001105"
+    }
+  ],
+  "customerCompanyIds": [
+    "00000000-0000-4000-8000-000000000101",
+    "00000000-0000-4000-8000-000000000102",
+    "00000000-0000-4000-8000-000000000103",
+    "00000000-0000-4000-8000-000000000104",
+    "00000000-0000-4000-8000-000000000105"
+  ],
+  "products": [
+    {
+      "id": "working-capital",
+      "version": "1",
+      "name": "На развитие бизнеса",
+      "description": "Синтетический кредит для демонстрации конвейера",
+      "purposeCodes": [
+        "WORKING_CAPITAL",
+        "EQUIPMENT",
+        "REFINANCING"
+      ],
+      "minAmountRub": 100000,
+      "maxAmountRub": 5000000,
+      "minTermMonths": 6,
+      "maxTermMonths": 36,
+      "annualRateBps": 2400,
+      "minBusinessAgeMonths": 6,
+      "maxDebtServiceRatioBps": 5000
+    },
+    {
+      "id": "equipment-finance",
+      "version": "1",
+      "name": "На оборудование",
+      "description": "Синтетический кредит на оборудование",
+      "purposeCodes": [
+        "EQUIPMENT"
+      ],
+      "minAmountRub": 100000,
+      "maxAmountRub": 10000000,
+      "minTermMonths": 12,
+      "maxTermMonths": 60,
+      "annualRateBps": 2200,
+      "minBusinessAgeMonths": 12,
+      "maxDebtServiceRatioBps": 5000
+    }
+  ],
+  "sourceFixtures": [
+    {
+      "companyId": "00000000-0000-4000-8000-000000000101",
+      "registryStatus": "ACTIVE",
+      "registryRegisteredAt": "2020-01-15",
+      "creditHistoryScore": 800,
+      "hasCurrentOverdue": false,
+      "taxDebtRub": 0,
+      "needsDescription": false,
+      "disputedFacts": false
+    },
+    {
+      "companyId": "00000000-0000-4000-8000-000000000102",
+      "registryStatus": "ACTIVE",
+      "registryRegisteredAt": "2020-01-15",
+      "creditHistoryScore": 800,
+      "hasCurrentOverdue": true,
+      "taxDebtRub": 0,
+      "needsDescription": false,
+      "disputedFacts": false
+    },
+    {
+      "companyId": "00000000-0000-4000-8000-000000000103",
+      "registryStatus": "ACTIVE",
+      "registryRegisteredAt": "2020-01-15",
+      "creditHistoryScore": 800,
+      "hasCurrentOverdue": false,
+      "taxDebtRub": 0,
+      "needsDescription": true,
+      "disputedFacts": false
+    },
+    {
+      "companyId": "00000000-0000-4000-8000-000000000104",
+      "registryStatus": "ACTIVE",
+      "registryRegisteredAt": "2020-01-15",
+      "creditHistoryScore": 800,
+      "hasCurrentOverdue": false,
+      "taxDebtRub": 0,
+      "needsDescription": false,
+      "disputedFacts": true
+    },
+    {
+      "companyId": "00000000-0000-4000-8000-000000000105",
+      "registryStatus": "ACTIVE",
+      "registryRegisteredAt": "2026-01-15",
+      "creditHistoryScore": 620,
+      "hasCurrentOverdue": false,
+      "taxDebtRub": 0,
+      "needsDescription": false,
+      "disputedFacts": false
+    }
+  ],
+  "financialData": {
+    "monthlyRevenueRub": 1000000,
+    "monthlyExpensesRub": 500000,
+    "existingMonthlyDebtPaymentsRub": 20000
+  },
+  "request": {
+    "amountRub": 1000000,
+    "termMonths": 12,
+    "purpose": "WORKING_CAPITAL"
+  },
+  "controlAsOf": "2026-10-24T09:00:00Z",
+  "expected": {
+    "businessAgeMonths": 81,
+    "monthlyPaymentRub": 94560,
+    "debtServiceRatioBps": 2292,
+    "score": 900,
+    "approvedCompanyId": "00000000-0000-4000-8000-000000000101",
+    "declinedCompanyId": "00000000-0000-4000-8000-000000000102"
+  },
+  "staff": {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "displayName": "Демо аналитик",
+    "tokenEnvironmentVariable": "DEMO_STAFF_TOKEN"
+  },
+  "accountFixtures": [
+    {
+      "id": "00000000-0000-4000-8000-000000001101",
+      "companyId": "00000000-0000-4000-8000-000000000101",
+      "label": "Основной демосчет",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000001102",
+      "companyId": "00000000-0000-4000-8000-000000000102",
+      "label": "Основной демосчет",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000001103",
+      "companyId": "00000000-0000-4000-8000-000000000103",
+      "label": "Основной демосчет",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000001104",
+      "companyId": "00000000-0000-4000-8000-000000000104",
+      "label": "Основной демосчет",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000001105",
+      "companyId": "00000000-0000-4000-8000-000000000105",
+      "label": "Основной демосчет",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000001199",
+      "companyId": "00000000-0000-4000-8000-000000000101",
+      "label": "Счет с ошибочными реквизитами",
+      "status": "INVALID"
+    }
+  ],
+  "scenarios": {
+    "happy": {
+      "companyId": "00000000-0000-4000-8000-000000000101",
+      "financialData": {
+        "monthlyRevenueRub": 1000000,
+        "monthlyExpensesRub": 500000,
+        "existingMonthlyDebtPaymentsRub": 20000
+      },
+      "termMonths": 12
+    },
+    "currentOverdue": {
+      "companyId": "00000000-0000-4000-8000-000000000102"
+    },
+    "needsInfo": {
+      "companyId": "00000000-0000-4000-8000-000000000103",
+      "requiredPath": "/additionalInfo/businessDescription"
+    },
+    "disputedFacts": {
+      "companyId": "00000000-0000-4000-8000-000000000104",
+      "resolution": "staffAttestation новой версии"
+    },
+    "manual": {
+      "companyId": "00000000-0000-4000-8000-000000000105",
+      "financialData": {
+        "monthlyRevenueRub": 1000000,
+        "monthlyExpensesRub": 500000,
+        "existingMonthlyDebtPaymentsRub": 160000
+      },
+      "termMonths": 36,
+      "expectedRiskScore": 550
+    },
+    "counteroffer": {
+      "companyId": "00000000-0000-4000-8000-000000000101",
+      "financialData": {
+        "monthlyRevenueRub": 600000,
+        "monthlyExpensesRub": 500000,
+        "existingMonthlyDebtPaymentsRub": 20000
+      },
+      "termMonths": 12,
+      "expectedAmountRub": 750000,
+      "expectedTermMonths": 36
+    }
+  }
+}

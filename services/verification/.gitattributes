@@ -1,0 +1,2 @@
+gradlew.bat text eol=crlf
+licenses/* whitespace=cr-at-eol,-blank-at-eof

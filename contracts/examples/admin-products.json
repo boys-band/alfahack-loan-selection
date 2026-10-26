@@ -1,0 +1,401 @@
+{
+  "exchanges": [
+    {
+      "operationId": "listAdminProducts",
+      "request": {},
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000000001"
+        },
+        "body": {
+          "items": [
+            {
+              "product": {
+                "id": "working-capital",
+                "version": "1",
+                "name": "На развитие бизнеса",
+                "description": "Синтетический кредит для демонстрации конвейера",
+                "purposeCodes": [
+                  "WORKING_CAPITAL",
+                  "EQUIPMENT",
+                  "REFINANCING"
+                ],
+                "minAmountRub": 100000,
+                "maxAmountRub": 5000000,
+                "minTermMonths": 6,
+                "maxTermMonths": 36,
+                "annualRateBps": 2400,
+                "minBusinessAgeMonths": 6,
+                "maxDebtServiceRatioBps": 5000
+              },
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "getAdminProduct",
+      "request": {
+        "path": {
+          "productId": "working-capital"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000000001",
+          "ETag": "\"e18b5db5e40a600232b20b943a08ecc201be73140095c68f3c34fa297109e11f\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "active": true,
+          "versions": [
+            {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "publishProductVersion",
+      "request": {
+        "path": {
+          "productId": "working-capital"
+        },
+        "headers": {
+          "Idempotency-Key": "admin-publish-v2",
+          "If-Match": "\"e18b5db5e40a600232b20b943a08ecc201be73140095c68f3c34fa297109e11f\""
+        },
+        "body": {
+          "name": "На развитие бизнеса",
+          "description": "Синтетический кредит для демонстрации конвейера",
+          "purposeCodes": [
+            "WORKING_CAPITAL",
+            "EQUIPMENT",
+            "REFINANCING"
+          ],
+          "minAmountRub": 100000,
+          "maxAmountRub": 5000000,
+          "minTermMonths": 6,
+          "maxTermMonths": 36,
+          "annualRateBps": 2100,
+          "minBusinessAgeMonths": 6,
+          "maxDebtServiceRatioBps": 5000,
+          "reason": "Демо: снижение ставки для нового набора заявок"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000000001",
+          "ETag": "\"017d0a498eb3db750f9dc5de6fbaf3c633d613455b604c9593af72ee7290680c\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "product": {
+            "id": "working-capital",
+            "version": "2",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2100,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "active": true,
+          "versions": [
+            {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            {
+              "id": "working-capital",
+              "version": "2",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2100,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "createAdminProduct",
+      "request": {
+        "headers": {
+          "Idempotency-Key": "admin-create-seasonal-1"
+        },
+        "body": {
+          "id": "seasonal-growth",
+          "name": "Сезонное развитие",
+          "description": "Синтетический кредит для демонстрации конвейера",
+          "purposeCodes": [
+            "WORKING_CAPITAL",
+            "EQUIPMENT",
+            "REFINANCING"
+          ],
+          "minAmountRub": 100000,
+          "maxAmountRub": 5000000,
+          "minTermMonths": 6,
+          "maxTermMonths": 36,
+          "annualRateBps": 2400,
+          "minBusinessAgeMonths": 6,
+          "maxDebtServiceRatioBps": 5000,
+          "reason": "Новая сезонная программа для клиентов"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000000001",
+          "ETag": "\"b5d3312f27437df3518d6f84fb02ae835b855aea41fdb82c33633ab804231803\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "product": {
+            "id": "seasonal-growth",
+            "version": "1",
+            "name": "Сезонное развитие",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "active": true,
+          "versions": [
+            {
+              "id": "seasonal-growth",
+              "version": "1",
+              "name": "Сезонное развитие",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "archiveAdminProduct",
+      "request": {
+        "path": {
+          "productId": "seasonal-growth"
+        },
+        "headers": {
+          "Idempotency-Key": "admin-archive-seasonal-1",
+          "If-Match": "\"b5d3312f27437df3518d6f84fb02ae835b855aea41fdb82c33633ab804231803\""
+        },
+        "body": {
+          "reason": "Программа снята с продажи после сезона"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000000001",
+          "ETag": "\"0b256dd182ffdb64cb52c69120d318343e2005b4ca44ccba374eaa1d536fd1fc\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "product": {
+            "id": "seasonal-growth",
+            "version": "1",
+            "name": "Сезонное развитие",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "active": false,
+          "versions": [
+            {
+              "id": "seasonal-growth",
+              "version": "1",
+              "name": "Сезонное развитие",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "rejections": [
+    {
+      "name": "missing reason",
+      "schema": "PublishProductVersionRequest",
+      "body": {
+        "name": "На развитие бизнеса",
+        "description": "Синтетический кредит для демонстрации конвейера",
+        "purposeCodes": [
+          "WORKING_CAPITAL",
+          "EQUIPMENT",
+          "REFINANCING"
+        ],
+        "minAmountRub": 100000,
+        "maxAmountRub": 5000000,
+        "minTermMonths": 6,
+        "maxTermMonths": 36,
+        "annualRateBps": 2100,
+        "minBusinessAgeMonths": 6,
+        "maxDebtServiceRatioBps": 5000
+      }
+    },
+    {
+      "name": "too high rate",
+      "schema": "PublishProductVersionRequest",
+      "body": {
+        "name": "На развитие бизнеса",
+        "description": "Синтетический кредит для демонстрации конвейера",
+        "purposeCodes": [
+          "WORKING_CAPITAL",
+          "EQUIPMENT",
+          "REFINANCING"
+        ],
+        "minAmountRub": 100000,
+        "maxAmountRub": 5000000,
+        "minTermMonths": 6,
+        "maxTermMonths": 36,
+        "annualRateBps": 10001,
+        "minBusinessAgeMonths": 6,
+        "maxDebtServiceRatioBps": 5000,
+        "reason": "Демо: снижение ставки для нового набора заявок"
+      }
+    },
+    {
+      "name": "create with invalid id",
+      "schema": "CreateAdminProductRequest",
+      "body": {
+        "id": "Invalid",
+        "name": "Сезонное развитие",
+        "description": "Синтетический кредит для демонстрации конвейера",
+        "purposeCodes": [
+          "WORKING_CAPITAL",
+          "EQUIPMENT",
+          "REFINANCING"
+        ],
+        "minAmountRub": 100000,
+        "maxAmountRub": 5000000,
+        "minTermMonths": 6,
+        "maxTermMonths": 36,
+        "annualRateBps": 2400,
+        "minBusinessAgeMonths": 6,
+        "maxDebtServiceRatioBps": 5000,
+        "reason": "Новая сезонная программа для клиентов"
+      }
+    },
+    {
+      "name": "archive without reason",
+      "schema": "ArchiveAdminProductRequest",
+      "body": {}
+    }
+  ]
+}

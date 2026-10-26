@@ -1,0 +1,51 @@
+Disbursement dependency notices
+
+Exact resolved versions are recorded in gradle.lockfile. Upstream copyright and
+license files remain in the distributed dependency JARs. No vendored library code
+is modified. This inventory includes runtime and test dependencies.
+
+Apache License 2.0:
+  Spring Boot / Spring Framework (Broadcom and contributors)
+  Apache Tomcat, Apache Log4j, Gradle Wrapper (Apache/Gradle contributors)
+  Jackson, SnakeYAML, HikariCP, networknt JSON Schema Validator, itu
+  Micrometer, AssertJ, Awaitility, Byte Buddy, Objenesis, OpenTest4J,
+  Jayway JsonPath, JSON-smart / accessors-smart, JSONassert, Android JSON
+
+MIT:
+  SLF4J, Mockito
+
+Eclipse Public License 2.0:
+  JUnit 5 / JUnit Platform
+
+Eclipse Public License 1.0 OR GNU Lesser General Public License 2.1:
+  Logback
+
+Eclipse Public License 2.0 OR GNU GPL 2 with Classpath Exception:
+  Jakarta Annotation API, Jakarta Activation API, Jakarta XML Binding API
+
+BSD 2-Clause:
+  PostgreSQL JDBC driver
+
+BSD 3-Clause:
+  Hamcrest, ASM, XMLUnit
+
+Apache License 2.0 (API Guardian contributors):
+  API Guardian
+
+MIT (Checker Framework contributors):
+  Checker Qual
+
+Container Java runtime: Eclipse Temurin OpenJDK 21.0.9+10, GPL 2 with
+Classpath Exception. Ubuntu base image packages retain their upstream licenses.
+Integration-only PostgreSQL image: PostgreSQL License (BSD-like).
+
+License texts and upstream project references:
+  https://www.apache.org/licenses/LICENSE-2.0
+  https://opensource.org/license/mit
+  https://www.eclipse.org/legal/epl-2.0/
+  https://www.eclipse.org/legal/epl-v10.html
+  https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+  https://opensource.org/license/bsd-2-clause
+  https://opensource.org/license/bsd-3-clause
+  https://openjdk.org/legal/gplv2+ce.html
+  https://www.postgresql.org/about/licence/

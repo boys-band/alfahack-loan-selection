@@ -1,0 +1,41 @@
+{
+  "id": "00000000-0000-4000-8000-000000000601",
+  "applicationId": "00000000-0000-4000-8000-000000000201",
+  "dataVersion": 1,
+  "customerId": "00000000-0000-4000-8000-000000000001",
+  "companyId": "00000000-0000-4000-8000-000000000101",
+  "offer": {
+    "id": "00000000-0000-4000-8000-000000000501",
+    "version": 1,
+    "applicationId": "00000000-0000-4000-8000-000000000201",
+    "dataVersion": 1,
+    "productId": "working-capital",
+    "productVersion": "1",
+    "type": "REQUESTED",
+    "termsId": "00000000-0000-4000-8000-000000001501",
+    "amountRub": 1000000,
+    "termMonths": 12,
+    "annualRateBps": 2400,
+    "monthlyPaymentRub": 94560,
+    "expiresAt": "2026-10-31T09:00:05Z"
+  },
+  "acceptedAt": "2026-10-24T09:01:00Z",
+  "createdAt": "2026-10-24T09:01:01Z",
+  "signBy": "2026-10-27T09:01:01Z",
+  "status": "SIGNED",
+  "closureReason": null,
+  "document": {
+    "version": 1,
+    "mediaType": "text/plain; charset=utf-8",
+    "content": "ДЕМОНСТРАЦИОННЫЙ КРЕДИТНЫЙ ДОГОВОР\nКомпания: ООО «Демо Мастерская»\nСумма: 1000000 RUB\nСрок: 12 месяцев\nСтавка: 24% годовых\nЕжемесячный платеж: 94560 RUB\nРеквизиты поручения хранятся отдельно.\n",
+    "sha256": "28e0d71b07b3f67c773024438fb88a60a275ddf13b4fc66c599868b9bdf7f47c"
+  },
+  "signature": {
+    "id": "00000000-0000-4000-8000-000000000801",
+    "customerId": "00000000-0000-4000-8000-000000000001",
+    "documentVersion": 1,
+    "documentSha256": "28e0d71b07b3f67c773024438fb88a60a275ddf13b4fc66c599868b9bdf7f47c",
+    "signedAt": "2026-10-24T09:02:01Z",
+    "method": "DEMO_CONSENT"
+  }
+}

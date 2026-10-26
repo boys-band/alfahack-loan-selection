@@ -1,0 +1,546 @@
+openapi: 3.1.0
+info:
+  title: Кредитные продукты
+  version: 2.0.0
+  description: Контракт по docs/application-state-model.md. V1 заменен до реализации.
+    Общие правила — contracts/README.md.
+servers:
+- url: http://localhost:8080/api
+  description: Gateway
+- url: http://catalog:8002
+  description: Внутренняя Docker-сеть
+security:
+- CustomerBearer: []
+- InternalBearer: []
+paths:
+  /v2/products:
+    get:
+      operationId: listProducts
+      summary: Текущие активные версии
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ProductList
+  /v2/products/{productId}:
+    get:
+      operationId: getProduct
+      summary: Конкретная версия либо текущая активная
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: productId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/ProductId
+      - name: version
+        in: query
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]*$
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Product
+  /v2/admin/products:
+    post:
+      operationId: createAdminProduct
+      summary: Создать и опубликовать активную программу версии 1
+      description: Повтор ключа возвращает сохраненный ответ. Новый ключ с идентичными исходными полями создания возвращает текущую программу с 200; иные попытки занять ID дают PRODUCT_ALREADY_EXISTS.
+      security:
+      - AdminBearer: []
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/CreateAdminProductRequest
+      responses:
+        '201':
+          description: Программа создана и опубликована.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                $ref: '#/components/schemas/ETag'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AdminProduct
+        '200':
+          description: Такая программа уже была создана с идентичными исходными полями.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                $ref: '#/components/schemas/ETag'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AdminProduct
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '503':
+          $ref: '#/components/responses/Error503'
+    get:
+      operationId: listAdminProducts
+      summary: Текущие указатели всех продуктов, включая неактивные
+      security:
+      - AdminBearer: []
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Административный список продуктов.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AdminProductList
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /v2/admin/products/{productId}:
+    get:
+      operationId: getAdminProduct
+      summary: Текущие условия и все сохраненные версии продукта
+      security:
+      - AdminBearer: []
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: productId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/ProductId
+      responses:
+        '200':
+          description: Административное представление; ETag вычислен от канонического JSON тела ответа.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                $ref: '#/components/schemas/ETag'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AdminProduct
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /v2/admin/products/{productId}/versions:
+    post:
+      operationId: publishProductVersion
+      summary: Атомарно опубликовать следующую неизменяемую версию
+      description: Успех возвращает 201; повтор того же ключа, пути, тела и If-Match возвращает сохраненные статус, тело и ETag без создания новой версии. Иной запрос с тем же ключом дает 409 IDEMPOTENCY_CONFLICT. Новый ключ со старым If-Match дает 412 VERSION_CONFLICT. Отсутствие If-Match дает 428.
+      security:
+      - AdminBearer: []
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: productId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/ProductId
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/PublishProductVersionRequest
+      responses:
+        '201':
+          description: Новая версия опубликована; ETag вычислен от канонического JSON этого тела.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                $ref: '#/components/schemas/ETag'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AdminProduct
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /v2/admin/products/{productId}/archive:
+    post:
+      operationId: archiveAdminProduct
+      summary: Архивировать программу без изменения сохраненных версий
+      security:
+      - AdminBearer: []
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: productId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/ProductId
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/ArchiveAdminProductRequest
+      responses:
+        '200':
+          description: Программа архивирована или уже была архивирована; история сохранена.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                $ref: '#/components/schemas/ETag'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AdminProduct
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /health/live:
+    get:
+      operationId: catalogHealthLive
+      summary: Health live
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+    servers:
+    - url: http://catalog:8002
+      description: Внутренняя Docker-сеть
+  /health/ready:
+    get:
+      operationId: catalogHealthReady
+      summary: Health ready
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+        '503':
+          $ref: '#/components/responses/Error503'
+    servers:
+    - url: http://catalog:8002
+      description: Внутренняя Docker-сеть
+components:
+  schemas:
+    ETag:
+      type: string
+      pattern: ^"[0-9a-f]{64}"$
+  securitySchemes:
+    AdminBearer:
+      type: http
+      scheme: bearer
+      description: Отдельный демотокен администратора продуктов; не является staff или internal токеном
+    CustomerBearer:
+      type: http
+      scheme: bearer
+      description: Демотокен клиента
+    InternalBearer:
+      type: http
+      scheme: bearer
+      description: Внутренний секрет; токены клиента/сотрудника не подходят
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      schema:
+        $ref: ../schemas.yaml#/$defs/Uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: ^[A-Za-z0-9:_.-]+$
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Непрозрачный ETag представления; передавать дословно.
+      schema:
+        type: string
+        pattern: ^"[0-9a-f]{64}"$
+  responses:
+    Error400:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error401:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error403:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error404:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error409:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error412:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error422:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error428:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error429:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error500:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error503:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem

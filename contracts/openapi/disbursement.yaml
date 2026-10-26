@@ -1,0 +1,466 @@
+openapi: 3.1.0
+info:
+  title: Реквизиты и моделируемая выдача
+  version: 2.0.0
+  description: Контракт по docs/application-state-model.md. V1 заменен до реализации.
+    Общие правила — contracts/README.md.
+servers:
+- url: http://disbursement:8006
+  description: Внутренняя Docker-сеть
+security:
+- InternalBearer: []
+paths:
+  /v2/disbursements:
+    post:
+      operationId: createDisbursement
+      summary: Сохранить Disbursement
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Disbursement
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Disbursement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/DisbursementRequest
+  /v2/disbursements/{disbursementId}:
+    get:
+      operationId: getDisbursement
+      summary: Прочитать Disbursement
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: disbursementId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Disbursement
+  /v2/company-accounts/{companyId}:
+    get:
+      operationId: listCompanyAccounts
+      summary: Синтетические счета компании
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AccountList
+  /v2/payout-checks:
+    post:
+      operationId: createPayoutCheck
+      summary: Проверить реквизиты версии поручения
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/PayoutCheck
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/PayoutCheck
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/PayoutCheckRequest
+  /v2/payout-checks/{payoutCheckId}:
+    get:
+      operationId: getPayoutCheck
+      summary: Прочитать проверку реквизитов
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: payoutCheckId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/PayoutCheck
+  /v2/disbursements/by-operation/{operationId}:
+    get:
+      operationId: getDisbursementByOperation
+      summary: Проверить исход до повтора неизвестной выдачи
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: operationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Disbursement
+      description: 404 означает, что подтвержденная запись сейчас не видна; повтор
+        допустим только с прежними operationId/ключом/телом.
+  /health/live:
+    get:
+      operationId: disbursementHealthLive
+      summary: Health live
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+    servers:
+    - url: http://disbursement:8006
+      description: Внутренняя Docker-сеть
+  /health/ready:
+    get:
+      operationId: disbursementHealthReady
+      summary: Health ready
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+        '503':
+          $ref: '#/components/responses/Error503'
+    servers:
+    - url: http://disbursement:8006
+      description: Внутренняя Docker-сеть
+components:
+  securitySchemes:
+    InternalBearer:
+      type: http
+      scheme: bearer
+      description: Внутренний секрет; токены клиента/сотрудника не подходят
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      schema:
+        $ref: ../schemas.yaml#/$defs/Uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: ^[A-Za-z0-9:_.-]+$
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Непрозрачный ETag представления; передавать дословно.
+      schema:
+        type: string
+        pattern: ^"[0-9a-f]{64}"$
+  responses:
+    Error400:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error401:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error403:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error404:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error409:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error412:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error422:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error428:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error429:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error500:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error503:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem

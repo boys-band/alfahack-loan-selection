@@ -1,0 +1,14 @@
+.venv-contracts/
+__pycache__/
+.env
+
+# Gradle caches and generated build output in all services
+.gradle/
+.gradle-home/
+Dockerfile.staff-registry-e2e
+build/
+node_modules/
+.husky/_/
+
+# Offline Gradle distribution for Docker builds
+gradle-dist/*.zip

@@ -1,0 +1,392 @@
+openapi: 3.1.0
+info:
+  title: Договоры, подпись и закрытие
+  version: 2.0.0
+  description: Контракт по docs/application-state-model.md. V1 заменен до реализации.
+    Общие правила — contracts/README.md.
+servers:
+- url: http://agreements:8005
+  description: Внутренняя Docker-сеть
+security:
+- InternalBearer: []
+paths:
+  /v2/agreements:
+    post:
+      operationId: createAgreement
+      summary: Сохранить Agreement
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Agreement
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/AgreementRequest
+  /v2/agreements/{agreementId}:
+    get:
+      operationId: getAgreement
+      summary: Прочитать Agreement
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: agreementId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Agreement
+  /v2/agreements/{agreementId}/sign:
+    post:
+      operationId: signAgreement
+      summary: Подписать только READY до signBy
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: agreementId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/InternalSignRequest
+  /v2/agreements/{agreementId}/close:
+    post:
+      operationId: closeAgreement
+      summary: Закрыть READY; SIGNED закрывать нельзя
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: agreementId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/CloseAgreementRequest
+  /health/live:
+    get:
+      operationId: agreementsHealthLive
+      summary: Health live
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+    servers:
+    - url: http://agreements:8005
+      description: Внутренняя Docker-сеть
+  /health/ready:
+    get:
+      operationId: agreementsHealthReady
+      summary: Health ready
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+        '503':
+          $ref: '#/components/responses/Error503'
+    servers:
+    - url: http://agreements:8005
+      description: Внутренняя Docker-сеть
+components:
+  securitySchemes:
+    InternalBearer:
+      type: http
+      scheme: bearer
+      description: Внутренний секрет; токены клиента/сотрудника не подходят
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      schema:
+        $ref: ../schemas.yaml#/$defs/Uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: ^[A-Za-z0-9:_.-]+$
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Непрозрачный ETag представления; передавать дословно.
+      schema:
+        type: string
+        pattern: ^"[0-9a-f]{64}"$
+  responses:
+    Error400:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error401:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error403:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error404:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error409:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error412:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error422:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error428:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error429:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error500:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error503:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem

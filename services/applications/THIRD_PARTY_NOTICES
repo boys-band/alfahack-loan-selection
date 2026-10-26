@@ -1,0 +1,36 @@
+Alfa Applications — third-party dependencies
+
+Exact resolved artifacts and scopes: gradle.lockfile. Runtime and build images
+are fixed by digest in Dockerfile. Copyright and original license notices remain
+in dependency JARs (META-INF/LICENSE*, META-INF/NOTICE*) and the base images.
+
+Runtime:
+- Spring Boot 3.5.16 / Spring Framework 6.2.19: Apache License 2.0.
+- Apache Tomcat 10.1.55: Apache License 2.0.
+- Jackson 2.21.x modules, SnakeYAML 2.4: Apache License 2.0.
+- HikariCP 6.3.3: Apache License 2.0.
+- PostgreSQL JDBC 42.7.8: BSD 2-Clause License.
+- networknt JSON Schema Validator 1.5.9: Apache License 2.0.
+- ethlo ITU 1.14.0: Apache License 2.0.
+- Micrometer 1.15.12: Apache License 2.0.
+- SLF4J 2.0.18: MIT License.
+- Logback 1.5.34: dual EPL 1.0 / LGPL 2.1.
+- Apache Log4j API / log4j-to-slf4j 2.24.3: Apache License 2.0.
+- Jakarta Annotations 2.1.1: EPL 2.0 / GPL 2 with Classpath Exception.
+- Checker Framework checker-qual 3.49.5: MIT License.
+- Eclipse Temurin OpenJDK 21: GPL 2 with Classpath Exception.
+
+Test/build only (not bundled in the runtime JAR):
+- Gradle 8.14.3, Spotless 8.0.0, google-java-format 1.28.0: Apache License 2.0.
+- JUnit Jupiter / Platform 5.12.2 / 1.12.2 and OpenTest4J: EPL 2.0.
+- API Guardian: Apache License 2.0.
+- Spring Boot Test / Spring Test: Apache License 2.0.
+- AssertJ, Mockito, Byte Buddy, JSONassert, JSONPath, Awaitility: Apache License 2.0.
+- Hamcrest, ASM, Objenesis: BSD 3-Clause License.
+- json-smart / accessors-smart, XMLUnit: Apache License 2.0.
+- Android JSON (Vaadin repackaging): Apache License 2.0.
+- Jakarta XML Binding / Activation APIs: Eclipse Distribution License 1.0.
+- PostgreSQL 16 test container: PostgreSQL License; OS package notices remain in image.
+
+Contracts and synthetic scenario fixtures are copied from this repository's
+accepted v2 baseline; no third-party banking integrations are bundled.

@@ -1,0 +1,504 @@
+{
+  "listCompanies": {
+    "method": "GET",
+    "path": "/v2/companies",
+    "body": null,
+    "response": "CompanyList",
+    "success": [
+      200
+    ],
+    "params": []
+  },
+  "getCompany": {
+    "method": "GET",
+    "path": "/v2/companies/{companyId}",
+    "body": null,
+    "response": "Company",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "companyId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "listCompanySettlementAccounts": {
+    "method": "GET",
+    "path": "/v2/companies/{companyId}/accounts",
+    "body": null,
+    "response": "AccountList",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "companyId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "listApplications": {
+    "method": "GET",
+    "path": "/v2/applications",
+    "body": null,
+    "response": "ApplicationPage",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "limit",
+        "location": "query",
+        "required": false,
+        "type": "integer"
+      },
+      {
+        "name": "cursor",
+        "location": "query",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  "createApplication": {
+    "method": "POST",
+    "path": "/v2/applications",
+    "body": "CreateApplicationRequest",
+    "response": "Application",
+    "success": [
+      201
+    ],
+    "params": []
+  },
+  "getApplication": {
+    "method": "GET",
+    "path": "/v2/applications/{applicationId}",
+    "body": null,
+    "response": "Application",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "updateDraft": {
+    "method": "PATCH",
+    "path": "/v2/applications/{applicationId}",
+    "body": "UpdateDraftRequest",
+    "response": "Application",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "submitApplication": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/submit",
+    "body": "SubmitRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "provideInformation": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/provide-info",
+    "body": "ProvideInfoRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "changeTerms": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/change-terms",
+    "body": "ChangeTermsRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "acceptOffer": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/accept-offer",
+    "body": "AcceptOfferRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "signApplicationAgreement": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/sign",
+    "body": "PublicSignRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "cancelApplication": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/cancel",
+    "body": "CancelRequest",
+    "response": "Application",
+    "success": [
+      200,
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "updatePayoutAccount": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/payout-account",
+    "body": "UpdatePayoutAccountRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "retryProcessing": {
+    "method": "POST",
+    "path": "/v2/applications/{applicationId}/retry-processing",
+    "body": null,
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "getTimeline": {
+    "method": "GET",
+    "path": "/v2/applications/{applicationId}/timeline",
+    "body": null,
+    "response": "Timeline",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "getDataVersion": {
+    "method": "GET",
+    "path": "/v2/applications/{applicationId}/versions/{dataVersion}",
+    "body": null,
+    "response": "DataVersion",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "dataVersion",
+        "location": "path",
+        "required": true,
+        "type": "integer"
+      }
+    ]
+  },
+  "getApplicationAgreement": {
+    "method": "GET",
+    "path": "/v2/applications/{applicationId}/agreement",
+    "body": null,
+    "response": "Agreement",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "listStaffApplications": {
+    "method": "GET",
+    "path": "/v2/staff/applications",
+    "body": null,
+    "response": "ApplicationPage",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "limit",
+        "location": "query",
+        "required": false,
+        "type": "integer"
+      },
+      {
+        "name": "cursor",
+        "location": "query",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "name": "status",
+        "location": "query",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "name": "approvalType",
+        "location": "query",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  "listStaffManualReviews": {
+    "method": "GET",
+    "path": "/v2/staff/manual-reviews",
+    "body": null,
+    "response": "ManualReviewPage",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "limit",
+        "location": "query",
+        "required": false,
+        "type": "integer"
+      },
+      {
+        "name": "cursor",
+        "location": "query",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  "getStaffManualReview": {
+    "method": "GET",
+    "path": "/v2/staff/applications/{applicationId}/manual-review",
+    "body": null,
+    "response": "ManualReviewCase",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "submitStaffReviewAction": {
+    "method": "POST",
+    "path": "/v2/staff/applications/{applicationId}/manual-review/actions",
+    "body": "StaffReviewActionRequest",
+    "response": "Application",
+    "success": [
+      202
+    ],
+    "params": [
+      {
+        "name": "applicationId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "listProducts": {
+    "method": "GET",
+    "path": "/v2/products",
+    "body": null,
+    "response": "ProductList",
+    "success": [
+      200
+    ],
+    "params": []
+  },
+  "getProduct": {
+    "method": "GET",
+    "path": "/v2/products/{productId}",
+    "body": null,
+    "response": "Product",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "productId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "version",
+        "location": "query",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  "createAdminProduct": {
+    "method": "POST",
+    "path": "/v2/admin/products",
+    "body": "CreateAdminProductRequest",
+    "response": "AdminProduct",
+    "success": [
+      201,
+      200
+    ],
+    "params": []
+  },
+  "listAdminProducts": {
+    "method": "GET",
+    "path": "/v2/admin/products",
+    "body": null,
+    "response": "AdminProductList",
+    "success": [
+      200
+    ],
+    "params": []
+  },
+  "getAdminProduct": {
+    "method": "GET",
+    "path": "/v2/admin/products/{productId}",
+    "body": null,
+    "response": "AdminProduct",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "productId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "publishProductVersion": {
+    "method": "POST",
+    "path": "/v2/admin/products/{productId}/versions",
+    "body": "PublishProductVersionRequest",
+    "response": "AdminProduct",
+    "success": [
+      201
+    ],
+    "params": [
+      {
+        "name": "productId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  },
+  "archiveAdminProduct": {
+    "method": "POST",
+    "path": "/v2/admin/products/{productId}/archive",
+    "body": "ArchiveAdminProductRequest",
+    "response": "AdminProduct",
+    "success": [
+      200
+    ],
+    "params": [
+      {
+        "name": "productId",
+        "location": "path",
+        "required": true,
+        "type": "string"
+      }
+    ]
+  }
+}

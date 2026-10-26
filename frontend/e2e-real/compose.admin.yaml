@@ -1,0 +1,4 @@
+services:
+  gateway:
+    ports: !override
+      - '127.0.0.1:${ADMIN_E2E_PORT:-18082}:8080'

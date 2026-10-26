@@ -1,0 +1,37 @@
+# Isolated feature stack using the merged common migration runner.
+services:
+  postgres:
+    healthcheck:
+      start_period: 120s
+      retries: 24
+  applications:
+    image: alfa-staff-registry-applications:it
+    build:
+      dockerfile: Dockerfile.staff-registry-e2e
+  catalog:
+    image: alfa-staff-registry-catalog:it
+    build:
+      dockerfile: Dockerfile.staff-registry-e2e
+  verification:
+    image: alfa-staff-registry-verification:it
+    build:
+      dockerfile: Dockerfile.staff-registry-e2e
+  decision:
+    image: alfa-staff-registry-decision:it
+    build:
+      dockerfile: Dockerfile.staff-registry-e2e
+  agreements:
+    image: alfa-staff-registry-agreements:it
+    build:
+      dockerfile: Dockerfile.staff-registry-e2e
+  disbursement:
+    image: alfa-staff-registry-disbursement:it
+    build:
+      dockerfile: Dockerfile.staff-registry-e2e
+  worker:
+    image: alfa-staff-registry-applications:it
+  frontend:
+    image: alfa-staff-registry-frontend:it
+  gateway:
+    ports: !override
+      - '127.0.0.1:${STAFF_E2E_PORT:-18084}:8080'

@@ -1,0 +1,1374 @@
+openapi: 3.1.0
+info:
+  title: Заявки, состояния и клиентские/банковские команды
+  version: 2.0.0
+  description: Контракт по docs/application-state-model.md. V1 заменен до реализации.
+    Общие правила — contracts/README.md.
+servers:
+- url: http://localhost:8080/api
+  description: Gateway
+- url: http://applications:8001
+  description: Внутренняя Docker-сеть
+security:
+- CustomerBearer: []
+paths:
+  /v2/companies:
+    get:
+      operationId: listCompanies
+      summary: Компании текущего клиента
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/CompanyList
+  /v2/companies/{companyId}:
+    get:
+      operationId: getCompany
+      summary: Компания текущего клиента
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Company
+  /v2/companies/{companyId}/accounts:
+    get:
+      operationId: listCompanySettlementAccounts
+      summary: Собственные демосчета компании
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/AccountList
+  /v2/applications:
+    get:
+      operationId: listApplications
+      summary: Заявки текущего клиента, createdAt DESC / id DESC
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ApplicationPage
+    post:
+      operationId: createApplication
+      summary: Создать черновик с dataVersion=0
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '201':
+          description: Ресурс создан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/CreateApplicationRequest
+  /v2/applications/{applicationId}:
+    get:
+      operationId: getApplication
+      summary: 'Заявка: клиент-владелец или сотрудник'
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      security:
+      - CustomerBearer: []
+      - StaffBearer: []
+    patch:
+      operationId: updateDraft
+      summary: Изменить только черновик
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/UpdateDraftRequest
+  /v2/applications/{applicationId}/submit:
+    post:
+      operationId: submitApplication
+      summary: Отправить версию данных с согласиями
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/SubmitRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/provide-info:
+    post:
+      operationId: provideInformation
+      summary: Ответить на актуальный дозапрос; новая версия
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/ProvideInfoRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/change-terms:
+    post:
+      operationId: changeTerms
+      summary: Новые условия из OFFER_READY; новая версия
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/ChangeTermsRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/accept-offer:
+    post:
+      operationId: acceptOffer
+      summary: Принять конкретную версию актуального предложения
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/AcceptOfferRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/sign:
+    post:
+      operationId: signApplicationAgreement
+      summary: Запустить подпись точного документа
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/PublicSignRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/cancel:
+    post:
+      operationId: cancelApplication
+      summary: Отменить; при гонке с подписью требуется сверка
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/CancelRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/payout-account:
+    post:
+      operationId: updatePayoutAccount
+      summary: Исправить поручение только в SIGNED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/UpdatePayoutAccountRequest
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/retry-processing:
+    post:
+      operationId: retryProcessing
+      summary: Возобновить сохраненный технический этап
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      description: 'Guards и переходы: docs/workflow.md. Тело для retry-processing
+        отсутствует. 202 подтверждает прием команды; фактический исход читается GET
+        заявки.'
+  /v2/applications/{applicationId}/timeline:
+    get:
+      operationId: getTimeline
+      summary: История переходов, авторов и версий по sequence ASC
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Timeline
+      security:
+      - CustomerBearer: []
+      - StaffBearer: []
+  /v2/applications/{applicationId}/versions/{dataVersion}:
+    get:
+      operationId: getDataVersion
+      summary: Неизменяемый отправленный снимок
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      - name: dataVersion
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/DataVersion
+      security:
+      - CustomerBearer: []
+      - StaffBearer: []
+  /v2/applications/{applicationId}/agreement:
+    get:
+      operationId: getApplicationAgreement
+      summary: Документ заявки после проверки доступа
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Agreement
+      security:
+      - CustomerBearer: []
+      - StaffBearer: []
+  /v2/staff/applications:
+    get:
+      operationId: listStaffApplications
+      summary: Общий реестр заявок всех клиентов, только чтение
+      description: >-
+        Живой реестр всех статусов. Сортировка created_at DESC, id DESC;
+        keyset cursor связан с status и approvalType, несовпадение дает 422.
+        approvalType выбирает только APPROVED decision текущей dataVersion,
+        включая последующие статусы после одобрения. Отсутствие фильтра включает
+        черновики и заявки без решения. Чтение не изменяет состояние.
+      security:
+      - StaffBearer: []
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+      - name: status
+        in: query
+        schema:
+          $ref: ../schemas.yaml#/$defs/ApplicationStatus
+      - name: approvalType
+        in: query
+        schema:
+          type: string
+          enum: [AUTO, MANUAL]
+      responses:
+        '200':
+          description: Страница заявок, пустая выборка допустима.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ApplicationPage
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /v2/staff/manual-reviews:
+    get:
+      operationId: listStaffManualReviews
+      summary: Очередь открытых ручных дел
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewPage
+      security:
+      - StaffBearer: []
+  /v2/staff/applications/{applicationId}/manual-review:
+    get:
+      operationId: getStaffManualReview
+      summary: Актуальное ручное дело
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/ManualReviewCase
+      security:
+      - StaffBearer: []
+  /v2/staff/applications/{applicationId}/manual-review/actions:
+    post:
+      operationId: submitStaffReviewAction
+      summary: Сохранить намерение сотрудника по текущей версии
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: applicationId
+        in: path
+        required: true
+        schema:
+          $ref: ../schemas.yaml#/$defs/Uuid
+      responses:
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '412':
+          $ref: '#/components/responses/Error412'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '428':
+          $ref: '#/components/responses/Error428'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '500':
+          $ref: '#/components/responses/Error500'
+        '503':
+          $ref: '#/components/responses/Error503'
+        '202':
+          description: Команда принята; исход еще нужно прочитать.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+            ETag:
+              schema:
+                type: string
+                pattern: ^"[0-9a-f]{64}"$
+            Cache-Control:
+              schema:
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas.yaml#/$defs/StaffReviewActionRequest
+      security:
+      - StaffBearer: []
+      description: staffId/actionId и время устанавливает applications, браузер их
+        не задает. Все неиспользуемые поля termsId/changes/factsResolution — null,
+        requirements — [].
+  /health/live:
+    get:
+      operationId: applicationsHealthLive
+      summary: Health live
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+    servers:
+    - url: http://applications:8001
+      description: Внутренняя Docker-сеть
+  /health/ready:
+    get:
+      operationId: applicationsHealthReady
+      summary: Health ready
+      security: []
+      responses:
+        '200':
+          description: Результат сохранен или прочитан.
+          headers:
+            X-Request-Id:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Uuid
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas.yaml#/$defs/Health
+        '503':
+          $ref: '#/components/responses/Error503'
+    servers:
+    - url: http://applications:8001
+      description: Внутренняя Docker-сеть
+components:
+  securitySchemes:
+    CustomerBearer:
+      type: http
+      scheme: bearer
+      description: Демотокен клиента
+    StaffBearer:
+      type: http
+      scheme: bearer
+      description: Отдельный демотокен сотрудника
+  parameters:
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      schema:
+        $ref: ../schemas.yaml#/$defs/Uuid
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+        pattern: ^[A-Za-z0-9:_.-]+$
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Непрозрачный ETag представления; передавать дословно.
+      schema:
+        type: string
+        pattern: ^"[0-9a-f]{64}"$
+  responses:
+    Error400:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error401:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error403:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error404:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error409:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error412:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error422:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error428:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error429:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error500:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem
+    Error503:
+      description: Ошибка.
+      headers:
+        X-Request-Id:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Uuid
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Секунды до повтора; при 409 только IDEMPOTENCY_IN_PROGRESS.
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../schemas.yaml#/$defs/Problem

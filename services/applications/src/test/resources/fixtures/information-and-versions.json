@@ -1,0 +1,1123 @@
+{
+  "description": "Независимые ветви: три источника дозапроса, новая версия и смена условий. Старый снимок читается отдельно.",
+  "exchanges": [
+    {
+      "operationId": "createVerification",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "Idempotency-Key": "v2-enrich-info-1"
+        },
+        "body": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "data": {
+            "company": {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "legalName": "ООО «Демо Нужны сведения»",
+              "inn": "7700000103",
+              "legalForm": "LLC",
+              "registeredAt": "2020-01-15",
+              "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+            },
+            "product": {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            "amountRub": 1000000,
+            "termMonths": 12,
+            "purpose": "WORKING_CAPITAL",
+            "financialData": {
+              "monthlyRevenueRub": 1000000,
+              "monthlyExpensesRub": 500000,
+              "existingMonthlyDebtPaymentsRub": 20000
+            },
+            "additionalInfo": {},
+            "consents": {
+              "personalDataConsent": true,
+              "creditBureauConsent": true,
+              "acceptedAt": "2026-10-24T09:00:00Z"
+            },
+            "staffAttestation": null
+          },
+          "asOf": "2026-10-24T09:00:00Z"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000301",
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "outcome": "NEEDS_INFO",
+          "asOf": "2026-10-24T09:00:00Z",
+          "completedAt": "2026-10-24T09:00:03Z",
+          "rawFacts": {
+            "registryStatus": "ACTIVE",
+            "registryRegisteredAt": "2020-01-15",
+            "businessAgeMonths": 81,
+            "creditHistoryScore": 800,
+            "hasCurrentOverdue": false,
+            "taxDebtRub": 0
+          },
+          "facts": {
+            "registryStatus": "ACTIVE",
+            "registryRegisteredAt": "2020-01-15",
+            "businessAgeMonths": 81,
+            "creditHistoryScore": 800,
+            "hasCurrentOverdue": false,
+            "taxDebtRub": 0
+          },
+          "confirmed": false,
+          "requirements": [
+            {
+              "path": "/additionalInfo/businessDescription",
+              "message": "Опишите деятельность компании"
+            }
+          ],
+          "findings": [
+            {
+              "source": "BKI",
+              "code": "NO_CURRENT_OVERDUE",
+              "severity": "INFO",
+              "message": "Текущей просрочки нет"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "getApplication",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"edcf9fd8c281854196169bae81033cd5703f4d3d640c6a79083d998e5c8b2db2\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 5,
+          "dataVersion": 1,
+          "status": "NEEDS_INFO",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000103",
+            "legalName": "ООО «Демо Нужны сведения»",
+            "inn": "7700000103",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+          },
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 1000000,
+          "termMonths": 12,
+          "purpose": "WORKING_CAPITAL",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 500000,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {},
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": {
+            "id": "00000000-0000-4000-8000-000000000301",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "outcome": "NEEDS_INFO",
+            "asOf": "2026-10-24T09:00:00Z",
+            "completedAt": "2026-10-24T09:00:03Z",
+            "rawFacts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": false,
+              "taxDebtRub": 0
+            },
+            "facts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": false,
+              "taxDebtRub": 0
+            },
+            "confirmed": false,
+            "requirements": [
+              {
+                "path": "/additionalInfo/businessDescription",
+                "message": "Опишите деятельность компании"
+              }
+            ],
+            "findings": [
+              {
+                "source": "BKI",
+                "code": "NO_CURRENT_OVERDUE",
+                "severity": "INFO",
+                "message": "Текущей просрочки нет"
+              }
+            ]
+          },
+          "decision": null,
+          "informationRequest": {
+            "id": "00000000-0000-4000-8000-000000002201",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "source": "ENRICHMENT",
+            "requirements": [
+              {
+                "path": "/additionalInfo/businessDescription",
+                "message": "Опишите деятельность компании"
+              }
+            ],
+            "createdAt": "2026-10-24T09:00:10Z",
+            "deadline": "2026-10-27T09:00:10Z",
+            "status": "OPEN"
+          },
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001103",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": "INFO",
+          "actionDeadline": "2026-10-27T09:00:10Z",
+          "closureReason": null,
+          "technicalError": null,
+          "processing": null,
+          "availableActions": [
+            "PROVIDE_INFO",
+            "CANCEL"
+          ],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:05Z"
+        }
+      }
+    },
+    {
+      "operationId": "provideInformation",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "If-Match": "\"edcf9fd8c281854196169bae81033cd5703f4d3d640c6a79083d998e5c8b2db2\"",
+          "Idempotency-Key": "v2-provide-info-1"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        },
+        "body": {
+          "informationRequestId": "00000000-0000-4000-8000-000000002201",
+          "changes": {
+            "additionalInfo": {
+              "businessDescription": "Производство синтетических изделий"
+            }
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"dc07ad7c8b8a31146e4f0d24693b2a1bff4637c30c0a766cdcdc36fa1270fa0b\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 6,
+          "dataVersion": 2,
+          "status": "SUBMITTED",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000103",
+            "legalName": "ООО «Демо Нужны сведения»",
+            "inn": "7700000103",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+          },
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 1000000,
+          "termMonths": 12,
+          "purpose": "WORKING_CAPITAL",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 500000,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {
+            "businessDescription": "Производство синтетических изделий"
+          },
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": null,
+          "decision": null,
+          "informationRequest": null,
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001103",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": null,
+          "actionDeadline": null,
+          "closureReason": null,
+          "technicalError": null,
+          "processing": {
+            "step": "VALIDATION",
+            "operationId": "00000000-0000-4000-8000-000000001901",
+            "state": "PENDING",
+            "attemptCount": 0
+          },
+          "availableActions": [
+            "CANCEL"
+          ],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:06Z"
+        }
+      }
+    },
+    {
+      "operationId": "getDataVersion",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "body": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "data": {
+            "company": {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "legalName": "ООО «Демо Нужны сведения»",
+              "inn": "7700000103",
+              "legalForm": "LLC",
+              "registeredAt": "2020-01-15",
+              "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+            },
+            "product": {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            "amountRub": 1000000,
+            "termMonths": 12,
+            "purpose": "WORKING_CAPITAL",
+            "financialData": {
+              "monthlyRevenueRub": 1000000,
+              "monthlyExpensesRub": 500000,
+              "existingMonthlyDebtPaymentsRub": 20000
+            },
+            "additionalInfo": {},
+            "consents": {
+              "personalDataConsent": true,
+              "creditBureauConsent": true,
+              "acceptedAt": "2026-10-24T09:00:00Z"
+            },
+            "staffAttestation": null
+          },
+          "createdAt": "2026-10-24T09:00:00Z",
+          "origin": "INITIAL_SUBMISSION",
+          "actorId": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    {
+      "operationId": "createVerification",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "Idempotency-Key": "v2-enrich-info-2"
+        },
+        "body": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 2,
+          "data": {
+            "company": {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "legalName": "ООО «Демо Нужны сведения»",
+              "inn": "7700000103",
+              "legalForm": "LLC",
+              "registeredAt": "2020-01-15",
+              "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+            },
+            "product": {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            "amountRub": 1000000,
+            "termMonths": 12,
+            "purpose": "WORKING_CAPITAL",
+            "financialData": {
+              "monthlyRevenueRub": 1000000,
+              "monthlyExpensesRub": 500000,
+              "existingMonthlyDebtPaymentsRub": 20000
+            },
+            "additionalInfo": {
+              "businessDescription": "Производство синтетических изделий"
+            },
+            "consents": {
+              "personalDataConsent": true,
+              "creditBureauConsent": true,
+              "acceptedAt": "2026-10-24T09:00:00Z"
+            },
+            "staffAttestation": null
+          },
+          "asOf": "2026-10-24T09:00:20Z"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000303",
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 2,
+          "outcome": "COMPLETE",
+          "asOf": "2026-10-24T09:00:00Z",
+          "completedAt": "2026-10-24T09:00:03Z",
+          "rawFacts": {
+            "registryStatus": "ACTIVE",
+            "registryRegisteredAt": "2020-01-15",
+            "businessAgeMonths": 81,
+            "creditHistoryScore": 800,
+            "hasCurrentOverdue": false,
+            "taxDebtRub": 0
+          },
+          "facts": {
+            "registryStatus": "ACTIVE",
+            "registryRegisteredAt": "2020-01-15",
+            "businessAgeMonths": 81,
+            "creditHistoryScore": 800,
+            "hasCurrentOverdue": false,
+            "taxDebtRub": 0
+          },
+          "confirmed": true,
+          "requirements": [],
+          "findings": [
+            {
+              "source": "BKI",
+              "code": "NO_CURRENT_OVERDUE",
+              "severity": "INFO",
+              "message": "Текущей просрочки нет"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "getApplication",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"5839a27ecd72d7024501b7e9c1209639f8f53ae77cfac8f1b12652ab4ae4b96b\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 4,
+          "dataVersion": 1,
+          "status": "NEEDS_INFO",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000101",
+            "legalName": "ООО «Демо Мастерская»",
+            "inn": "7700000002",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+          },
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 1000000,
+          "termMonths": 12,
+          "purpose": "REFINANCING",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 500000,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {},
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": null,
+          "decision": null,
+          "informationRequest": {
+            "id": "00000000-0000-4000-8000-000000002202",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "source": "VALIDATION",
+            "requirements": [
+              {
+                "path": "/additionalInfo/refinancedDebtRub",
+                "message": "Укажите рефинансируемый долг"
+              }
+            ],
+            "createdAt": "2026-10-24T09:00:10Z",
+            "deadline": "2026-10-27T09:00:10Z",
+            "status": "OPEN"
+          },
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": "INFO",
+          "actionDeadline": "2026-10-27T09:00:10Z",
+          "closureReason": null,
+          "technicalError": null,
+          "processing": null,
+          "availableActions": [
+            "PROVIDE_INFO",
+            "CANCEL"
+          ],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:04Z"
+        }
+      }
+    },
+    {
+      "operationId": "createDecision",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "Idempotency-Key": "v2-score-needs-info"
+        },
+        "body": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "data": {
+            "company": {
+              "id": "00000000-0000-4000-8000-000000000101",
+              "legalName": "ООО «Демо Мастерская»",
+              "inn": "7700000002",
+              "legalForm": "LLC",
+              "registeredAt": "2020-01-15",
+              "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+            },
+            "product": {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            "amountRub": 1000000,
+            "termMonths": 12,
+            "purpose": "WORKING_CAPITAL",
+            "financialData": {
+              "monthlyRevenueRub": 1000000,
+              "monthlyExpensesRub": 0,
+              "existingMonthlyDebtPaymentsRub": 20000
+            },
+            "additionalInfo": {},
+            "consents": {
+              "personalDataConsent": true,
+              "creditBureauConsent": true,
+              "acceptedAt": "2026-10-24T09:00:00Z"
+            },
+            "staffAttestation": null
+          },
+          "verification": {
+            "id": "00000000-0000-4000-8000-000000000301",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "outcome": "COMPLETE",
+            "asOf": "2026-10-24T09:00:00Z",
+            "completedAt": "2026-10-24T09:00:03Z",
+            "rawFacts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": false,
+              "taxDebtRub": 0
+            },
+            "facts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": false,
+              "taxDebtRub": 0
+            },
+            "confirmed": true,
+            "requirements": [],
+            "findings": [
+              {
+                "source": "BKI",
+                "code": "NO_CURRENT_OVERDUE",
+                "severity": "INFO",
+                "message": "Текущей просрочки нет"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000401",
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "kind": "AUTO",
+          "policyVersion": "demo-policy-v2",
+          "evaluatedAt": "2026-10-24T09:00:05Z",
+          "outcome": "NEEDS_INFO",
+          "assessmentId": null,
+          "risk": null,
+          "evaluatedTerms": [],
+          "selectedTermsId": null,
+          "reasons": [
+            {
+              "code": "ADDITIONAL_INFORMATION_REQUIRED",
+              "message": "Объясните отсутствие расходов"
+            }
+          ],
+          "requirements": [
+            {
+              "path": "/additionalInfo/revenueExplanation",
+              "message": "Объясните отсутствие расходов"
+            }
+          ],
+          "offer": null,
+          "staffAudit": null
+        }
+      }
+    },
+    {
+      "operationId": "getApplication",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"6101488732fb1cb3447b87e774ba703cbfac0e1005566bfda0f1fd925c47bd94\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 6,
+          "dataVersion": 1,
+          "status": "NEEDS_INFO",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000101",
+            "legalName": "ООО «Демо Мастерская»",
+            "inn": "7700000002",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+          },
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 1000000,
+          "termMonths": 12,
+          "purpose": "WORKING_CAPITAL",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 0,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {},
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": {
+            "id": "00000000-0000-4000-8000-000000000301",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "outcome": "COMPLETE",
+            "asOf": "2026-10-24T09:00:00Z",
+            "completedAt": "2026-10-24T09:00:03Z",
+            "rawFacts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": false,
+              "taxDebtRub": 0
+            },
+            "facts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": false,
+              "taxDebtRub": 0
+            },
+            "confirmed": true,
+            "requirements": [],
+            "findings": [
+              {
+                "source": "BKI",
+                "code": "NO_CURRENT_OVERDUE",
+                "severity": "INFO",
+                "message": "Текущей просрочки нет"
+              }
+            ]
+          },
+          "decision": {
+            "id": "00000000-0000-4000-8000-000000000401",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "kind": "AUTO",
+            "policyVersion": "demo-policy-v2",
+            "evaluatedAt": "2026-10-24T09:00:05Z",
+            "outcome": "NEEDS_INFO",
+            "assessmentId": null,
+            "risk": null,
+            "evaluatedTerms": [],
+            "selectedTermsId": null,
+            "reasons": [
+              {
+                "code": "ADDITIONAL_INFORMATION_REQUIRED",
+                "message": "Объясните отсутствие расходов"
+              }
+            ],
+            "requirements": [
+              {
+                "path": "/additionalInfo/revenueExplanation",
+                "message": "Объясните отсутствие расходов"
+              }
+            ],
+            "offer": null,
+            "staffAudit": null
+          },
+          "informationRequest": {
+            "id": "00000000-0000-4000-8000-000000002203",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "source": "SCORING",
+            "requirements": [
+              {
+                "path": "/additionalInfo/revenueExplanation",
+                "message": "Объясните отсутствие расходов"
+              }
+            ],
+            "createdAt": "2026-10-24T09:00:10Z",
+            "deadline": "2026-10-27T09:00:10Z",
+            "status": "OPEN"
+          },
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": "INFO",
+          "actionDeadline": "2026-10-27T09:00:10Z",
+          "closureReason": null,
+          "technicalError": null,
+          "processing": null,
+          "availableActions": [
+            "PROVIDE_INFO",
+            "CANCEL"
+          ],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:06Z"
+        }
+      }
+    },
+    {
+      "operationId": "changeTerms",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "If-Match": "\"d79129afec0cbf3b0bcdfc148bbc9e6ca4aa7ed9f473f5fd59332802bf72bf1b\"",
+          "Idempotency-Key": "v2-change-terms-1"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        },
+        "body": {
+          "amountRub": 900000
+        }
+      },
+      "response": {
+        "status": 202,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"5e16cb5a3549c888fc93bf5ef7cd0e6efda6664bee5d15fee4dc69481b0ecc9a\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 7,
+          "dataVersion": 2,
+          "status": "VALIDATION",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000101",
+            "legalName": "ООО «Демо Мастерская»",
+            "inn": "7700000002",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+          },
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 900000,
+          "termMonths": 12,
+          "purpose": "WORKING_CAPITAL",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 500000,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {},
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": null,
+          "decision": null,
+          "informationRequest": null,
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": null,
+          "actionDeadline": null,
+          "closureReason": null,
+          "technicalError": null,
+          "processing": {
+            "step": "VALIDATION",
+            "operationId": "00000000-0000-4000-8000-000000001901",
+            "state": "PENDING",
+            "attemptCount": 0
+          },
+          "availableActions": [
+            "CANCEL"
+          ],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:07Z"
+        }
+      }
+    },
+    {
+      "operationId": "changeTerms",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "If-Match": "\"d79129afec0cbf3b0bcdfc148bbc9e6ca4aa7ed9f473f5fd59332802bf72bf1b\"",
+          "Idempotency-Key": "v2-change-product-1"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        },
+        "body": {
+          "productId": "equipment-finance",
+          "productVersion": "1",
+          "termMonths": 24,
+          "purpose": "EQUIPMENT"
+        }
+      },
+      "response": {
+        "status": 202,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"cb3e07c296764f8f6d72cc289fdb1db0f8d3ba16974b67162d9ff7af60ca3bc0\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 7,
+          "dataVersion": 2,
+          "status": "VALIDATION",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000101",
+            "legalName": "ООО «Демо Мастерская»",
+            "inn": "7700000002",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+          },
+          "product": {
+            "id": "equipment-finance",
+            "version": "1",
+            "name": "На оборудование",
+            "description": "Синтетический кредит на оборудование",
+            "purposeCodes": [
+              "EQUIPMENT"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 10000000,
+            "minTermMonths": 12,
+            "maxTermMonths": 60,
+            "annualRateBps": 2200,
+            "minBusinessAgeMonths": 12,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 1000000,
+          "termMonths": 24,
+          "purpose": "EQUIPMENT",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 500000,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {},
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": null,
+          "decision": null,
+          "informationRequest": null,
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001101",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": null,
+          "actionDeadline": null,
+          "closureReason": null,
+          "technicalError": null,
+          "processing": {
+            "step": "VALIDATION",
+            "operationId": "00000000-0000-4000-8000-000000001901",
+            "state": "PENDING",
+            "attemptCount": 0
+          },
+          "availableActions": [
+            "CANCEL"
+          ],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:07Z"
+        }
+      }
+    }
+  ]
+}

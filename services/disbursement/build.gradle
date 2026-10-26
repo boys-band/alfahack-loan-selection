@@ -1,0 +1,72 @@
+plugins {
+    id 'com.diffplug.spotless' version '8.0.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+}
+
+group = 'ru.alfa'
+version = '1.0.0'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.5.7')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+    implementation 'com.networknt:json-schema-validator:1.5.9'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyLocking { lockAllConfigurations() }
+
+tasks.withType(JavaCompile).configureEach { options.compilerArgs += '-parameters' }
+
+sourceSets {
+    test { java.srcDirs = ['tests/unit'] }
+    integrationTest {
+        java.srcDirs = ['tests/integration']
+        resources.srcDirs = ['tests/resources']
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging { events 'failed', 'skipped'; exceptionFormat = 'full' }
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'HTTP acceptance tests against an isolated real PostgreSQL.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+    // Each invocation receives a newly created database; cached results cannot verify it.
+    outputs.upToDateWhen { false }
+}
+
+tasks.named('bootJar') { archiveFileName = 'disbursement.jar' }
+
+// Keep the formatter/version identical in all independent service builds.
+spotless {
+    java {
+        if (providers.gradleProperty('formatFiles').isPresent()) {
+            target new groovy.json.JsonSlurper().parseText(providers.gradleProperty('formatFiles').get())
+        } else {
+            target 'src/*/java/**/*.java', 'tests/unit/**/*.java', 'tests/integration/**/*.java'
+        }
+        googleJavaFormat('1.28.0')
+        encoding 'UTF-8'
+        lineEndings 'UNIX'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

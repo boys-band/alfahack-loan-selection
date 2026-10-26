@@ -1,0 +1,48 @@
+{
+  "applicationId": "00000000-0000-4000-8000-000000000201",
+  "dataVersion": 1,
+  "data": {
+    "company": {
+      "id": "00000000-0000-4000-8000-000000000101",
+      "legalName": "ООО «Демо Мастерская»",
+      "inn": "7700000002",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+    },
+    "product": {
+      "id": "working-capital",
+      "version": "1",
+      "name": "На развитие бизнеса",
+      "description": "Синтетический кредит для демонстрации конвейера",
+      "purposeCodes": [
+        "WORKING_CAPITAL",
+        "EQUIPMENT",
+        "REFINANCING"
+      ],
+      "minAmountRub": 100000,
+      "maxAmountRub": 5000000,
+      "minTermMonths": 6,
+      "maxTermMonths": 36,
+      "annualRateBps": 2400,
+      "minBusinessAgeMonths": 6,
+      "maxDebtServiceRatioBps": 5000
+    },
+    "amountRub": 1000000,
+    "termMonths": 12,
+    "purpose": "WORKING_CAPITAL",
+    "financialData": {
+      "monthlyRevenueRub": 1000000,
+      "monthlyExpensesRub": 500000,
+      "existingMonthlyDebtPaymentsRub": 20000
+    },
+    "additionalInfo": {},
+    "consents": {
+      "personalDataConsent": true,
+      "creditBureauConsent": true,
+      "acceptedAt": "2026-10-24T09:00:00Z"
+    },
+    "staffAttestation": null
+  },
+  "asOf": "2026-10-24T09:00:00Z"
+}

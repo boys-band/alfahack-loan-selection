@@ -1,0 +1,52 @@
+plugins {
+    id 'com.diffplug.spotless' version '8.0.0'
+    id 'java'
+    id 'application'
+}
+
+group = 'ru.alfa.demo'
+version = '1.0.0'
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+repositories {
+    if (providers.gradleProperty('localRepository').isPresent()) {
+        maven { url = uri(providers.gradleProperty('localRepository').get()) }
+    }
+    mavenCentral()
+}
+dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
+    implementation 'org.postgresql:postgresql:42.7.5'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
+    testImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2'
+}
+application { mainClass = 'ru.alfa.agreements.Main' }
+tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
+test { useJUnitPlatform { excludeTags 'integration' } }
+tasks.register('integrationTest', Test) {
+    description = 'HTTP tests against an isolated real PostgreSQL 16 cluster'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform { includeTags 'integration' }
+    systemProperty 'pg.bin', providers.gradleProperty('pgBin').getOrElse('')
+    shouldRunAfter test
+}
+dependencyLocking { lockAllConfigurations() }
+tasks.named('wrapper') { gradleVersion = '8.14.3'; distributionType = Wrapper.DistributionType.BIN }
+
+// Keep the formatter/version identical in all independent service builds.
+spotless {
+    java {
+        if (providers.gradleProperty('formatFiles').isPresent()) {
+            target new groovy.json.JsonSlurper().parseText(providers.gradleProperty('formatFiles').get())
+        } else {
+            target 'src/*/java/**/*.java', 'tests/unit/**/*.java', 'tests/integration/**/*.java'
+        }
+        googleJavaFormat('1.28.0')
+        encoding 'UTF-8'
+        lineEndings 'UNIX'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

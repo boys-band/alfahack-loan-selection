@@ -1,0 +1,80 @@
+{
+  "companies": [
+    {
+      "id": "00000000-0000-4000-8000-000000000101",
+      "legalName": "ООО «Демо Мастерская»",
+      "inn": "7700000002",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000102",
+      "legalName": "ООО «Демо Просрочка»",
+      "inn": "7700000010",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001102"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000103",
+      "legalName": "ООО «Демо Нужны сведения»",
+      "inn": "7700000103",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001103"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000104",
+      "legalName": "ООО «Демо Спорные данные»",
+      "inn": "7700000104",
+      "legalForm": "LLC",
+      "registeredAt": "2020-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001104"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000105",
+      "legalName": "ООО «Демо Ручной анализ»",
+      "inn": "7700000105",
+      "legalForm": "LLC",
+      "registeredAt": "2026-01-15",
+      "settlementAccountId": "00000000-0000-4000-8000-000000001105"
+    }
+  ],
+  "products": [
+    {
+      "id": "working-capital",
+      "version": "1",
+      "name": "На развитие бизнеса",
+      "description": "Синтетический кредит для демонстрации конвейера",
+      "purposeCodes": [
+        "WORKING_CAPITAL",
+        "EQUIPMENT",
+        "REFINANCING"
+      ],
+      "minAmountRub": 100000,
+      "maxAmountRub": 5000000,
+      "minTermMonths": 6,
+      "maxTermMonths": 36,
+      "annualRateBps": 2400,
+      "minBusinessAgeMonths": 6,
+      "maxDebtServiceRatioBps": 5000
+    },
+    {
+      "id": "equipment-finance",
+      "version": "1",
+      "name": "На оборудование",
+      "description": "Синтетический кредит на оборудование",
+      "purposeCodes": [
+        "EQUIPMENT"
+      ],
+      "minAmountRub": 100000,
+      "maxAmountRub": 10000000,
+      "minTermMonths": 12,
+      "maxTermMonths": 60,
+      "annualRateBps": 2200,
+      "minBusinessAgeMonths": 12,
+      "maxDebtServiceRatioBps": 5000
+    }
+  ]
+}

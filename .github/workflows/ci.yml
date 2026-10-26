@@ -1,0 +1,188 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CI: 'true'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  contracts:
+    name: API contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: contracts/requirements.txt
+      - run: python -m pip install -r contracts/requirements.txt
+      - run: python scripts/validate_contracts.py
+
+  database:
+    name: PostgreSQL schemas and permissions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: docker info
+      - run: python scripts/validate_database.py
+
+  backend:
+    name: Backend / ${{ matrix.service }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [applications, catalog, verification, decision, agreements, disbursement]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+          cache-dependency-path: services/${{ matrix.service }}/gradle.lockfile
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: docker info
+      - name: Unit tests
+        run: make -C "services/$SERVICE" test
+        env:
+          SERVICE: ${{ matrix.service }}
+      - name: HTTP and PostgreSQL integration tests
+        if: ${{ !cancelled() }}
+        run: make -C "services/$SERVICE" test-integration
+        env:
+          SERVICE: ${{ matrix.service }}
+      - name: Build
+        run: make -C "services/$SERVICE" build
+        env:
+          SERVICE: ${{ matrix.service }}
+      - name: Save test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: tests-${{ matrix.service }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            services/${{ matrix.service }}/build/reports/tests/
+            services/${{ matrix.service }}/build/test-results/
+
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      HUSKY: '0'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+          cache-dependency-path: services/**/gradle.lockfile
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Formatting tools and partial-staging regression tests
+        run: npm test
+      - name: Java and frontend formatting
+        run: npm run format:check
+
+  frontend:
+    name: Frontend / unit and browser tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: frontend/package.json
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies
+        id: install
+        run: npm ci
+      - name: Unit and frontend contract tests
+        run: npm test 2>&1 | tee unit-tests.log
+      - name: Typecheck and production build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run build
+      - name: Install Playwright Chromium
+        id: browser
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          npx playwright install --with-deps chromium
+          node --input-type=module -e 'import { chromium } from "@playwright/test"; console.log("PLAYWRIGHT_CHROMIUM_EXECUTABLE=" + chromium.executablePath());' >> "$GITHUB_ENV"
+      - name: Browser acceptance tests
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: npm run test-e2e -- --reporter=line,html
+      - name: Save frontend test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: tests-frontend
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            frontend/unit-tests.log
+            frontend/playwright-report/
+            frontend/test-results/
+
+  all-tests:
+    name: All tests
+    if: ${{ always() }}
+    needs: [contracts, database, backend, frontend, formatting]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every test suite to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          results = json.loads(os.environ['RESULTS'])
+          for name, job in results.items():
+              print(f"{name}: {job['result']}")
+          sys.exit(0 if all(job['result'] == 'success' for job in results.values()) else 1)
+          PY

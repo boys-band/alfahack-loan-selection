@@ -1,0 +1,5 @@
+{
+  "contracts/schemas.yaml": "adb2f90de7a47ab5dbc22d95ba7a3b115f837f55d1246a0be501a045c8392af2",
+  "contracts/openapi/applications.yaml": "10dea526fde23a734bf7388ea36f1b5688bd59f87cb5ca452fad2fff2d78ebad",
+  "contracts/openapi/catalog.yaml": "0c27ade9c9b5d790a78fcbf0a3fa144d087eb5d444e21191e28402af50473a20"
+}

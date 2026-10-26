@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+dist/
+.gradle/
+.gradle-home/
+.m2/
+target/
+build/
+.tools/

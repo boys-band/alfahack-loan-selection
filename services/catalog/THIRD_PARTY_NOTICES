@@ -1,0 +1,46 @@
+Third-party components used by catalog
+======================================
+Exact resolved Java artifacts and scopes are recorded in gradle.lockfile.
+Source artifacts retain their upstream copyright and license notices.
+
+Runtime:
+- Jackson annotations/core/databind 2.18.3: Apache License 2.0
+  https://github.com/FasterXML/jackson
+- HikariCP 6.3.0: Apache License 2.0
+  https://github.com/brettwooldridge/HikariCP
+- PostgreSQL JDBC 42.7.5: BSD 2-Clause
+  https://jdbc.postgresql.org/about/license.html
+- Checker Framework checker-qual 3.48.3: MIT
+  https://github.com/typetools/checker-framework
+- SLF4J API / NOP 2.0.17: MIT
+  https://www.slf4j.org/license.html
+
+Tests:
+- JUnit Jupiter 5.12.1 / JUnit Platform 1.12.1: Eclipse Public License 2.0
+  https://github.com/junit-team/junit5
+- OpenTest4J 1.3.0, API Guardian 1.1.2: Apache License 2.0
+  https://github.com/ota4j-team/opentest4j
+  https://github.com/apiguardian-team/apiguardian
+- NetworkNT JSON Schema Validator 1.5.6: Apache License 2.0
+  https://github.com/networknt/json-schema-validator
+- ethlo itu 1.10.3: Apache License 2.0
+  https://github.com/ethlo/itu
+- Jackson dataformat YAML 2.18.3, SnakeYAML 2.4: Apache License 2.0
+  https://github.com/FasterXML/jackson-dataformats-text
+  https://bitbucket.org/snakeyaml/snakeyaml
+
+Build/runtime tooling:
+- Gradle 8.14.3, Spotless 8.0.0, google-java-format 1.28.0 and Shadow 8.3.6:
+  Apache License 2.0. Wrapper scripts include their upstream license header.
+  https://www.apache.org/licenses/LICENSE-2.0
+- Eclipse Temurin OpenJDK 21: GPLv2 with Classpath Exception.
+  https://adoptium.net/about/
+- PostgreSQL 16 Docker image: PostgreSQL License; bundled OS packages
+  retain their individual upstream licenses.
+  https://www.postgresql.org/about/licence/
+
+License texts:
+Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+MIT: https://opensource.org/license/mit
+EPL-2.0: https://www.eclipse.org/legal/epl-2.0/
+GPL-2.0 with Classpath Exception: https://openjdk.org/legal/gplv2+ce.html

@@ -1,0 +1,172 @@
+# Коллекция для REST Client в VS Code. Реализация сервисов предстоит.
+# После каждого действия переносить ID/ETag из ответа. Сценарии ниже имеют разные исходные состояния.
+# Для нового действия менять суффикс run1; при повторе сохранять ключ, тело и If-Match.
+@base = http://localhost:8080/api
+@token = {{$processEnv DEMO_CUSTOMER_TOKEN}}
+@staffToken = {{$processEnv DEMO_STAFF_TOKEN}}
+@companyId = 00000000-0000-4000-8000-000000000101
+@applicationId = REPLACE_FROM_CREATE_RESPONSE
+@etag = "REPLACE_WITH_64_HEX_ETAG_FROM_RESPONSE"
+@dataVersion = 1
+@offerId = REPLACE_FROM_APPLICATION_DECISION
+@offerVersion = 1
+@agreementId = REPLACE_FROM_AGREEMENT
+@documentVersion = 1
+@documentSha256 = REPLACE_FROM_AGREEMENT
+@informationRequestId = REPLACE_FROM_APPLICATION
+@settlementAccountId = REPLACE_FROM_COMPANY_ACCOUNTS
+@termsId = REPLACE_FROM_CURRENT_DECISION_EVALUATED_TERMS
+
+### Компании
+GET {{base}}/v2/companies
+Authorization: Bearer {{token}}
+
+### Продукты
+GET {{base}}/v2/products
+Authorization: Bearer {{token}}
+
+### Создание черновика
+POST {{base}}/v2/applications
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Idempotency-Key: v2-create-run1
+
+{
+  "companyId": "{{companyId}}",
+  "productId": "working-capital",
+  "productVersion": "1",
+  "amountRub": 1000000,
+  "termMonths": 12,
+  "purpose": "WORKING_CAPITAL",
+  "financialData": {
+    "monthlyRevenueRub": 1000000,
+    "monthlyExpensesRub": 500000,
+    "existingMonthlyDebtPaymentsRub": 20000
+  },
+  "additionalInfo": {}
+}
+
+### Отправить: сохранить согласия; создается dataVersion=1
+POST {{base}}/v2/applications/{{applicationId}}/submit
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-submit-run1
+
+{"personalDataConsent": true, "creditBureauConsent": true}
+
+### Читать status + reviewStage + technicalError, переносить актуальный ETag
+GET {{base}}/v2/applications/{{applicationId}}
+Authorization: Bearer {{token}}
+
+### Полная история переходов и авторов
+GET {{base}}/v2/applications/{{applicationId}}/timeline
+Authorization: Bearer {{token}}
+
+### Неизменяемая версия данных
+GET {{base}}/v2/applications/{{applicationId}}/versions/{{dataVersion}}
+Authorization: Bearer {{token}}
+
+### Только NEEDS_INFO до срока: новая версия и повторные проверки
+POST {{base}}/v2/applications/{{applicationId}}/provide-info
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-info-run1
+
+{
+  "informationRequestId": "{{informationRequestId}}",
+  "changes": {"additionalInfo": {"businessDescription": "Производство синтетических изделий"}}
+}
+
+### Только OFFER_READY: смена условий закрывает прежнее предложение
+POST {{base}}/v2/applications/{{applicationId}}/change-terms
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-terms-run1
+
+{"amountRub": 900000}
+
+### Только OFFER_READY: принять текущие ID и версии из нового ответа
+POST {{base}}/v2/applications/{{applicationId}}/accept-offer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-accept-run1
+
+{"offerId": "{{offerId}}", "offerVersion": {{offerVersion}}, "dataVersion": {{dataVersion}}}
+
+### После подготовки документа: прочитать текст, signBy, хеш и версию
+GET {{base}}/v2/applications/{{applicationId}}/agreement
+Authorization: Bearer {{token}}
+
+### Только AWAITING_SIGNATURE: после команды читать заявку до SIGNED/DISBURSED
+POST {{base}}/v2/applications/{{applicationId}}/sign
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-sign-run1
+
+{
+  "agreementId": "{{agreementId}}",
+  "documentVersion": {{documentVersion}},
+  "documentSha256": "{{documentSha256}}",
+  "consent": true
+}
+
+### Счета своей компании
+GET {{base}}/v2/companies/{{companyId}}/accounts
+Authorization: Bearer {{token}}
+
+### Только SIGNED при ожидании корректных реквизитов
+POST {{base}}/v2/applications/{{applicationId}}/payout-account
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-payout-fix-run1
+
+{"settlementAccountId": "{{settlementAccountId}}"}
+
+### Повтор сохраненного технического этапа: тело отсутствует
+POST {{base}}/v2/applications/{{applicationId}}/retry-processing
+Authorization: Bearer {{token}}
+If-Match: {{etag}}
+Idempotency-Key: v2-retry-run1
+
+### Отмена до подписания; 202 требует дождаться фактического исхода
+POST {{base}}/v2/applications/{{applicationId}}/cancel
+Authorization: Bearer {{token}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-cancel-run1
+
+{"reason": "Финансирование больше не требуется"}
+
+### Staff: очередь ручного рассмотрения
+GET {{base}}/v2/staff/manual-reviews
+Authorization: Bearer {{staffToken}}
+
+### Staff: заявка для чтения актуальных фактов/оценки и ETag
+GET {{base}}/v2/applications/{{applicationId}}
+Authorization: Bearer {{staffToken}}
+
+### Staff: текущее дело и разрешенные действия
+GET {{base}}/v2/staff/applications/{{applicationId}}/manual-review
+Authorization: Bearer {{staffToken}}
+
+### Staff: APPROVE только при завершенном текущем скоринге; staffId задает сервер
+POST {{base}}/v2/staff/applications/{{applicationId}}/manual-review/actions
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+If-Match: {{etag}}
+Idempotency-Key: v2-staff-approve-run1
+
+{
+  "action": "APPROVE",
+  "reason": "Данные текущей версии проверены, условия допустимы",
+  "termsId": "{{termsId}}",
+  "requirements": [],
+  "changes": null,
+  "factsResolution": null
+}

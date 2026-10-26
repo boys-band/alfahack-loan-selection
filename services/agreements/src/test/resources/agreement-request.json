@@ -1,0 +1,29 @@
+{
+  "applicationId": "00000000-0000-4000-8000-000000000201",
+  "dataVersion": 1,
+  "customerId": "00000000-0000-4000-8000-000000000001",
+  "company": {
+    "id": "00000000-0000-4000-8000-000000000101",
+    "legalName": "ООО «Демо Мастерская»",
+    "inn": "7700000002",
+    "legalForm": "LLC",
+    "registeredAt": "2020-01-15",
+    "settlementAccountId": "00000000-0000-4000-8000-000000001101"
+  },
+  "offer": {
+    "id": "00000000-0000-4000-8000-000000000501",
+    "version": 1,
+    "applicationId": "00000000-0000-4000-8000-000000000201",
+    "dataVersion": 1,
+    "productId": "working-capital",
+    "productVersion": "1",
+    "type": "REQUESTED",
+    "termsId": "00000000-0000-4000-8000-000000001501",
+    "amountRub": 1000000,
+    "termMonths": 12,
+    "annualRateBps": 2400,
+    "monthlyPaymentRub": 94560,
+    "expiresAt": "2026-10-31T09:00:05Z"
+  },
+  "acceptedAt": "2026-10-24T09:01:00Z"
+}

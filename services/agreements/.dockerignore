@@ -1,0 +1,11 @@
+*
+!settings.gradle
+!build.gradle
+!gradle.lockfile
+!src/
+!src/main/
+!src/main/**
+!gradlew
+!gradle/
+!gradle/**
+!THIRD_PARTY_NOTICES

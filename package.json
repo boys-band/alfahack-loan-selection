@@ -1,0 +1,22 @@
+{
+  "name": "alfa-hack-tooling",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.22.1"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "format": "npm run format:java && npm run format:frontend",
+    "format:java": "node scripts/format-java.mjs",
+    "format:frontend": "node scripts/format-frontend.mjs",
+    "format:check": "node scripts/format-java.mjs --check && node scripts/format-frontend.mjs --check",
+    "format:staged": "lint-staged",
+    "test": "node --test scripts/tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "husky": "9.1.7",
+    "lint-staged": "16.2.7",
+    "prettier": "3.6.2"
+  }
+}

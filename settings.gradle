@@ -1,0 +1,5 @@
+rootProject.name = 'alfa-hack'
+
+['applications', 'catalog', 'verification', 'decision', 'agreements', 'disbursement'].each {
+    includeBuild("services/${it}")
+}

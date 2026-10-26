@@ -1,0 +1,31 @@
+Runtime dependencies (versions locked in gradle.lockfile)
+
+Jackson annotations, core, databind 2.19.2 — Apache License 2.0
+https://github.com/FasterXML/jackson
+PostgreSQL JDBC driver 42.7.5 — BSD 2-Clause License
+https://github.com/pgjdbc/pgjdbc
+Checker Framework annotations (checker-qual) 3.48.3 — MIT License
+https://github.com/typetools/checker-framework
+
+Test dependencies
+JUnit Jupiter 5.11.4 and JUnit Platform 1.11.4 — Eclipse Public License 2.0
+https://github.com/junit-team/junit5
+API Guardian 1.1.2 — Apache License 2.0
+https://github.com/apiguardian-team/apiguardian
+OpenTest4J 1.3.0 — Apache License 2.0
+https://github.com/ota4j-team/opentest4j
+Jackson YAML 2.19.2 — Apache License 2.0
+https://github.com/FasterXML/jackson-dataformats-text
+SnakeYAML 2.4 — Apache License 2.0
+https://bitbucket.org/snakeyaml/snakeyaml
+
+Build/runtime distributions
+Gradle 8.14.3 and generated Gradle Wrapper — Apache License 2.0
+https://github.com/gradle/gradle
+Eclipse Temurin OpenJDK 21 — GPLv2 with Classpath Exception (runtime distribution)
+https://adoptium.net
+PostgreSQL 16 (test infrastructure) — PostgreSQL License
+https://www.postgresql.org/about/licence/
+
+Dependency notices and licenses remain in their original JARs/distributions. No Python
+dependencies are included in the service. Financial examples/policy are synthetic.

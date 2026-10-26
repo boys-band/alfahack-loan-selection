@@ -1,0 +1,503 @@
+{
+  "description": "Полная негативная информация проходит в SCORING; высокий балл не отменяет просрочку.",
+  "exchanges": [
+    {
+      "operationId": "createVerification",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "Idempotency-Key": "v2-enrich-bad-1"
+        },
+        "body": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "data": {
+            "company": {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "legalName": "ООО «Демо Просрочка»",
+              "inn": "7700000010",
+              "legalForm": "LLC",
+              "registeredAt": "2020-01-15",
+              "settlementAccountId": "00000000-0000-4000-8000-000000001102"
+            },
+            "product": {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            "amountRub": 1000000,
+            "termMonths": 12,
+            "purpose": "WORKING_CAPITAL",
+            "financialData": {
+              "monthlyRevenueRub": 1000000,
+              "monthlyExpensesRub": 500000,
+              "existingMonthlyDebtPaymentsRub": 20000
+            },
+            "additionalInfo": {},
+            "consents": {
+              "personalDataConsent": true,
+              "creditBureauConsent": true,
+              "acceptedAt": "2026-10-24T09:00:00Z"
+            },
+            "staffAttestation": null
+          },
+          "asOf": "2026-10-24T09:00:00Z"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000301",
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "outcome": "COMPLETE",
+          "asOf": "2026-10-24T09:00:00Z",
+          "completedAt": "2026-10-24T09:00:03Z",
+          "rawFacts": {
+            "registryStatus": "ACTIVE",
+            "registryRegisteredAt": "2020-01-15",
+            "businessAgeMonths": 81,
+            "creditHistoryScore": 800,
+            "hasCurrentOverdue": true,
+            "taxDebtRub": 0
+          },
+          "facts": {
+            "registryStatus": "ACTIVE",
+            "registryRegisteredAt": "2020-01-15",
+            "businessAgeMonths": 81,
+            "creditHistoryScore": 800,
+            "hasCurrentOverdue": true,
+            "taxDebtRub": 0
+          },
+          "confirmed": true,
+          "requirements": [],
+          "findings": [
+            {
+              "source": "BKI",
+              "code": "CURRENT_OVERDUE",
+              "severity": "BLOCK",
+              "message": "Есть текущая просрочка"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "createDecision",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "Idempotency-Key": "v2-score-bad-1"
+        },
+        "body": {
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "data": {
+            "company": {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "legalName": "ООО «Демо Просрочка»",
+              "inn": "7700000010",
+              "legalForm": "LLC",
+              "registeredAt": "2020-01-15",
+              "settlementAccountId": "00000000-0000-4000-8000-000000001102"
+            },
+            "product": {
+              "id": "working-capital",
+              "version": "1",
+              "name": "На развитие бизнеса",
+              "description": "Синтетический кредит для демонстрации конвейера",
+              "purposeCodes": [
+                "WORKING_CAPITAL",
+                "EQUIPMENT",
+                "REFINANCING"
+              ],
+              "minAmountRub": 100000,
+              "maxAmountRub": 5000000,
+              "minTermMonths": 6,
+              "maxTermMonths": 36,
+              "annualRateBps": 2400,
+              "minBusinessAgeMonths": 6,
+              "maxDebtServiceRatioBps": 5000
+            },
+            "amountRub": 1000000,
+            "termMonths": 12,
+            "purpose": "WORKING_CAPITAL",
+            "financialData": {
+              "monthlyRevenueRub": 1000000,
+              "monthlyExpensesRub": 500000,
+              "existingMonthlyDebtPaymentsRub": 20000
+            },
+            "additionalInfo": {},
+            "consents": {
+              "personalDataConsent": true,
+              "creditBureauConsent": true,
+              "acceptedAt": "2026-10-24T09:00:00Z"
+            },
+            "staffAttestation": null
+          },
+          "verification": {
+            "id": "00000000-0000-4000-8000-000000000301",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "outcome": "COMPLETE",
+            "asOf": "2026-10-24T09:00:00Z",
+            "completedAt": "2026-10-24T09:00:03Z",
+            "rawFacts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": true,
+              "taxDebtRub": 0
+            },
+            "facts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": true,
+              "taxDebtRub": 0
+            },
+            "confirmed": true,
+            "requirements": [],
+            "findings": [
+              {
+                "source": "BKI",
+                "code": "CURRENT_OVERDUE",
+                "severity": "BLOCK",
+                "message": "Есть текущая просрочка"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000401",
+          "applicationId": "00000000-0000-4000-8000-000000000201",
+          "dataVersion": 1,
+          "kind": "AUTO",
+          "policyVersion": "demo-policy-v2",
+          "evaluatedAt": "2026-10-24T09:00:05Z",
+          "outcome": "REJECTED",
+          "assessmentId": "00000000-0000-4000-8000-000000001401",
+          "risk": {
+            "score": 900,
+            "grade": "LOW",
+            "factors": [
+              {
+                "code": "BASE",
+                "points": 300,
+                "description": "Базовые баллы"
+              },
+              {
+                "code": "CREDIT_HISTORY",
+                "points": 250,
+                "description": "Оценка БКИ"
+              },
+              {
+                "code": "BUSINESS_AGE",
+                "points": 150,
+                "description": "Возраст бизнеса"
+              },
+              {
+                "code": "DEBT_BURDEN",
+                "points": 200,
+                "description": "Долговая нагрузка"
+              }
+            ],
+            "freeCashFlowRub": 500000,
+            "debtServiceRatioBps": 2292
+          },
+          "evaluatedTerms": [
+            {
+              "id": "00000000-0000-4000-8000-000000001501",
+              "amountRub": 1000000,
+              "termMonths": 12,
+              "annualRateBps": 2400,
+              "monthlyPaymentRub": 94560,
+              "risk": {
+                "score": 900,
+                "grade": "LOW",
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "points": 300,
+                    "description": "Базовые баллы"
+                  },
+                  {
+                    "code": "CREDIT_HISTORY",
+                    "points": 250,
+                    "description": "Оценка БКИ"
+                  },
+                  {
+                    "code": "BUSINESS_AGE",
+                    "points": 150,
+                    "description": "Возраст бизнеса"
+                  },
+                  {
+                    "code": "DEBT_BURDEN",
+                    "points": 200,
+                    "description": "Долговая нагрузка"
+                  }
+                ],
+                "freeCashFlowRub": 500000,
+                "debtServiceRatioBps": 2292
+              },
+              "eligible": false,
+              "reasons": [
+                {
+                  "code": "CURRENT_OVERDUE",
+                  "message": "Есть текущая просрочка"
+                }
+              ]
+            }
+          ],
+          "selectedTermsId": "00000000-0000-4000-8000-000000001501",
+          "reasons": [
+            {
+              "code": "CURRENT_OVERDUE",
+              "message": "Есть текущая просрочка"
+            }
+          ],
+          "requirements": [],
+          "offer": null,
+          "staffAudit": null
+        }
+      }
+    },
+    {
+      "operationId": "getApplication",
+      "request": {
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001"
+        },
+        "path": {
+          "applicationId": "00000000-0000-4000-8000-000000000201"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "X-Request-Id": "00000000-0000-4000-8000-000000001001",
+          "ETag": "\"6044e05b2e715493979a790d988edbf8e9c54f3949fecfae6744df200c4ac75f\"",
+          "Cache-Control": "no-store"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "customerId": "00000000-0000-4000-8000-000000000001",
+          "version": 6,
+          "dataVersion": 1,
+          "status": "REJECTED",
+          "reviewStage": null,
+          "company": {
+            "id": "00000000-0000-4000-8000-000000000102",
+            "legalName": "ООО «Демо Просрочка»",
+            "inn": "7700000010",
+            "legalForm": "LLC",
+            "registeredAt": "2020-01-15",
+            "settlementAccountId": "00000000-0000-4000-8000-000000001102"
+          },
+          "product": {
+            "id": "working-capital",
+            "version": "1",
+            "name": "На развитие бизнеса",
+            "description": "Синтетический кредит для демонстрации конвейера",
+            "purposeCodes": [
+              "WORKING_CAPITAL",
+              "EQUIPMENT",
+              "REFINANCING"
+            ],
+            "minAmountRub": 100000,
+            "maxAmountRub": 5000000,
+            "minTermMonths": 6,
+            "maxTermMonths": 36,
+            "annualRateBps": 2400,
+            "minBusinessAgeMonths": 6,
+            "maxDebtServiceRatioBps": 5000
+          },
+          "amountRub": 1000000,
+          "termMonths": 12,
+          "purpose": "WORKING_CAPITAL",
+          "financialData": {
+            "monthlyRevenueRub": 1000000,
+            "monthlyExpensesRub": 500000,
+            "existingMonthlyDebtPaymentsRub": 20000
+          },
+          "additionalInfo": {},
+          "consents": {
+            "personalDataConsent": true,
+            "creditBureauConsent": true,
+            "acceptedAt": "2026-10-24T09:00:00Z"
+          },
+          "verification": {
+            "id": "00000000-0000-4000-8000-000000000301",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "outcome": "COMPLETE",
+            "asOf": "2026-10-24T09:00:00Z",
+            "completedAt": "2026-10-24T09:00:03Z",
+            "rawFacts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": true,
+              "taxDebtRub": 0
+            },
+            "facts": {
+              "registryStatus": "ACTIVE",
+              "registryRegisteredAt": "2020-01-15",
+              "businessAgeMonths": 81,
+              "creditHistoryScore": 800,
+              "hasCurrentOverdue": true,
+              "taxDebtRub": 0
+            },
+            "confirmed": true,
+            "requirements": [],
+            "findings": [
+              {
+                "source": "BKI",
+                "code": "CURRENT_OVERDUE",
+                "severity": "BLOCK",
+                "message": "Есть текущая просрочка"
+              }
+            ]
+          },
+          "decision": {
+            "id": "00000000-0000-4000-8000-000000000401",
+            "applicationId": "00000000-0000-4000-8000-000000000201",
+            "dataVersion": 1,
+            "kind": "AUTO",
+            "policyVersion": "demo-policy-v2",
+            "evaluatedAt": "2026-10-24T09:00:05Z",
+            "outcome": "REJECTED",
+            "assessmentId": "00000000-0000-4000-8000-000000001401",
+            "risk": {
+              "score": 900,
+              "grade": "LOW",
+              "factors": [
+                {
+                  "code": "BASE",
+                  "points": 300,
+                  "description": "Базовые баллы"
+                },
+                {
+                  "code": "CREDIT_HISTORY",
+                  "points": 250,
+                  "description": "Оценка БКИ"
+                },
+                {
+                  "code": "BUSINESS_AGE",
+                  "points": 150,
+                  "description": "Возраст бизнеса"
+                },
+                {
+                  "code": "DEBT_BURDEN",
+                  "points": 200,
+                  "description": "Долговая нагрузка"
+                }
+              ],
+              "freeCashFlowRub": 500000,
+              "debtServiceRatioBps": 2292
+            },
+            "evaluatedTerms": [
+              {
+                "id": "00000000-0000-4000-8000-000000001501",
+                "amountRub": 1000000,
+                "termMonths": 12,
+                "annualRateBps": 2400,
+                "monthlyPaymentRub": 94560,
+                "risk": {
+                  "score": 900,
+                  "grade": "LOW",
+                  "factors": [
+                    {
+                      "code": "BASE",
+                      "points": 300,
+                      "description": "Базовые баллы"
+                    },
+                    {
+                      "code": "CREDIT_HISTORY",
+                      "points": 250,
+                      "description": "Оценка БКИ"
+                    },
+                    {
+                      "code": "BUSINESS_AGE",
+                      "points": 150,
+                      "description": "Возраст бизнеса"
+                    },
+                    {
+                      "code": "DEBT_BURDEN",
+                      "points": 200,
+                      "description": "Долговая нагрузка"
+                    }
+                  ],
+                  "freeCashFlowRub": 500000,
+                  "debtServiceRatioBps": 2292
+                },
+                "eligible": false,
+                "reasons": [
+                  {
+                    "code": "CURRENT_OVERDUE",
+                    "message": "Есть текущая просрочка"
+                  }
+                ]
+              }
+            ],
+            "selectedTermsId": "00000000-0000-4000-8000-000000001501",
+            "reasons": [
+              {
+                "code": "CURRENT_OVERDUE",
+                "message": "Есть текущая просрочка"
+              }
+            ],
+            "requirements": [],
+            "offer": null,
+            "staffAudit": null
+          },
+          "informationRequest": null,
+          "manualReview": null,
+          "acceptedOffer": null,
+          "agreement": null,
+          "payoutInstruction": {
+            "payoutVersion": 1,
+            "settlementAccountId": "00000000-0000-4000-8000-000000001102",
+            "operationId": null
+          },
+          "payoutCheck": null,
+          "disbursement": null,
+          "deadlineKind": null,
+          "actionDeadline": null,
+          "closureReason": "CREDIT_REJECTED",
+          "technicalError": null,
+          "processing": null,
+          "availableActions": [],
+          "nextActionHint": "Заявка обрабатывается",
+          "createdAt": "2026-10-24T08:59:00Z",
+          "updatedAt": "2026-10-24T09:00:06Z"
+        }
+      }
+    }
+  ]
+}
